@@ -1,0 +1,16 @@
+package com.ppdaibid.thread;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import org.junit.Test;
+
+public class BatchListingInfosThreadTest {
+
+	@Test
+	public void test() {
+		Runnable batchListingInfosThread = new BatchListingInfosThread(new ArrayList<>(), new HashMap<>());
+		new java.lang.Thread(batchListingInfosThread).start();
+	}
+
+}
