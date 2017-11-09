@@ -5,6 +5,8 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
@@ -16,19 +18,48 @@ import com.ppdai.open.core.Result;
 import com.ppdaibid.dao.PPDdao;
 import com.ppdaibid.dao.impl.PPDdaoImpl;
 import com.ppdaibid.info.LoanInfo;
+import com.ppdaibid.utils.AutoBidManager;
 import com.ppdaibid.utils.BidUtil;
+import com.ppdaibid.utils.PropertiesUtil;
 
+/**
+ * 向拍拍贷服务器发送获取LoanList请求线程，默认请求第一也数据
+ * @author joesealea
+ */
 public class LoanListThread implements Runnable {
 
-	public static int maxPageIndex = 0;
-	private static Logger logger = Logger.getLogger(LoanListThread.class);
+	private static final Logger logger = Logger.getLogger(LoanListThread.class);
+	private static final ExecutorService executorService = Executors.newCachedThreadPool();
 
-	private int pageIndex = 1;
-
+	//页码
+	private static int pageIndex = 1;
+	//一次batchListingInfos请求最大允许的ListingIds数量
+	private static int batchListingInfosSize = 10;
+	private static int validTime = -12;
+	
 	private PPDdao ppDdao = null;
+	
+	public LoanListThread() {
+		this(1);
+	}
 
-	public LoanListThread(int pageIndex) {
-		this.pageIndex = pageIndex;
+	public LoanListThread(int pageIndex_) {
+		pageIndex = pageIndex_;
+		try {
+			validTime = 0 - Integer.parseInt(PropertiesUtil.getProperty("validTime", "12"));
+		} catch (Exception e) {
+			logger.error("The second time that's used to get valid data of LoanList request(second) configurate error", e);
+			validTime = -12;
+		}
+		
+		try {
+			//从配置文件中读取一次batchListingInfos请求最大允许的ListingIds数量，如果未配置或者配置错误，则使用默认值
+			batchListingInfosSize = Integer.parseInt(PropertiesUtil.getProperty("batchListingInfosSize", "10"));
+		} catch (Exception e) {
+			logger.error("ListingIds parameter's size of one batchListingInfos request configurate error", e);
+			batchListingInfosSize = 10;
+		}
+		
 		WebApplicationContext context = ContextLoader.getCurrentWebApplicationContext();
 		PPDdaoImpl ppDdaoImpl = context.getBean("ppddao", PPDdaoImpl.class);
 		ppDdao = ppDdaoImpl;
@@ -44,37 +75,42 @@ public class LoanListThread implements Runnable {
 		loanInfosMap = new HashMap<Integer, LoanInfo>();
 
 		Calendar c = Calendar.getInstance();
-		c.add(Calendar.SECOND, -12);
+		c.add(Calendar.SECOND, validTime);
 
 		List<Integer> ignoreIds = ppDdao.getCanBeIgnoreIds();
 
 		Result result = BidUtil.loanList(pageIndex, c.getTime());
 
+		String context = result.getContext();
+		if (context.contains("您的操作太频繁")) {
+			logger.error("LoanInfo请求太频繁，请求结果为：" + context);
+			AutoBidManager.needWait = true;
+			return;
+		}
+		
 		if (!result.isSucess()) {
 			logger.error("获取loanList结果异常：" + result.getContext());
 			return;
 		}
 
-		logger.debug("loanList结果为：" + result.getContext());
+		logger.debug("loanList结果为：" + context);
 
-		JSONObject context = new JSONObject(result.getContext());
-		JSONArray jsonLoanInfos = context.getJSONArray("LoanInfos");
-
-		int length = jsonLoanInfos.length();
-
-		if (0 >= length) {
-			maxPageIndex = this.pageIndex - 1;
+		JSONObject jsoncontext = new JSONObject(context);
+		JSONArray jsonLoanInfos = null;
+		try {
+			jsonLoanInfos = jsoncontext.getJSONArray("LoanInfos");
+		} catch (Exception e) {
+			logger.error("LoanList结果JSON解析错误：", e);
 			return;
 		}
-		if (maxPageIndex < this.pageIndex) {
-			maxPageIndex = this.pageIndex;
-		}
+		
+		int length = jsonLoanInfos.length();
 
 		for (int i = 0; i < length; i++) {
-			JSONObject loanInfoJson = (JSONObject) jsonLoanInfos.get(i);
-			int listingId = loanInfoJson.getInt("ListingId");
+			JSONObject jsonloanInfo = (JSONObject) jsonLoanInfos.get(i);
+			int listingId = jsonloanInfo.getInt("ListingId");
 			LoanInfo loanInfo = new LoanInfo();
-			loanInfo.setLoanList(loanInfoJson);
+			loanInfo.setLoanList(jsonloanInfo);
 
 			listIds.add(listingId);
 			loanInfosMap.put(listingId, loanInfo);
@@ -87,16 +123,15 @@ public class LoanListThread implements Runnable {
 		List<Integer> listIdsParam = new ArrayList<Integer>();
 		Map<Integer, LoanInfo> loanInfosMapParam = new HashMap<Integer, LoanInfo>();
 		int listingId;
-		//TODO 一次性最多查询数量从配置文件中读取
-		int batchSize = 10;
+		
 		for(int i = 0; i < length; i ++) {
 			listingId = listIds.get(i);
 			listIdsParam.add(listingId);
 			loanInfosMapParam.put(listingId, loanInfosMap.get(listingId));
 			
-			if ((batchSize <= listIdsParam.size() || i >= length - 1) && 0 < listIdsParam.size()) {
+			if ((batchListingInfosSize <= listIdsParam.size() || i >= length - 1) && 0 < listIdsParam.size()) {
 				Runnable batchListingInfosThread = new BatchListingInfosThread(listIdsParam, loanInfosMapParam);
-				new Thread(batchListingInfosThread).start();
+				executorService.execute(batchListingInfosThread);
 				listIdsParam = new ArrayList<Integer>();
 				loanInfosMapParam = new HashMap<Integer, LoanInfo>();
 			}
