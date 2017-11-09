@@ -22,7 +22,7 @@ public class StrategyCheck {
 				&& 8000 > loanInfo.getOwingAmount()
 				&& 0.7 >= loanInfo.getOwingAmount() / loanInfo.getTotalPrincipal()
 				&& 0.6 >= loanInfo.getOwingAmount() / loanInfo.getHighestDebt()
-				&& 2 >= (loanInfo.getAmount() + loanInfo.getOwingAmount()) / loanInfo.getHighestDebt()
+				&& 1.2 >= (loanInfo.getAmount() + loanInfo.getOwingAmount()) / loanInfo.getHighestDebt()
 				&& 2 >= loanInfo.getAmount() / loanInfo.getHighestPrincipal()
 				&& 25000 >= loanInfo.getAmount() + loanInfo.getOwingAmount()
 				&& 0 < loanInfo.getRemainFunding()) {
