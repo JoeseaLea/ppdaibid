@@ -2,11 +2,14 @@ package com.ppdaibid.thread;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
@@ -30,6 +33,8 @@ public class LoanListThread implements Runnable {
 
 	private static final Logger logger = Logger.getLogger(LoanListThread.class);
 	private static final ExecutorService executorService = Executors.newCachedThreadPool();
+	
+	private static Map<Integer, Date> ignoreIdsMap = new HashMap<Integer, Date>();
 
 	//页码
 	private static int pageIndex = 1;
@@ -117,7 +122,21 @@ public class LoanListThread implements Runnable {
 		}
 
 		listIds.removeAll(ignoreIds);
+		listIds.removeAll(ignoreIdsMap.keySet());
+		
+		final List<Integer> fListIds = listIds;
+		Thread thread = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				Date date = Calendar.getInstance().getTime();
+				for (Integer listingId : fListIds) {
+					ignoreIdsMap.put(listingId, date);
+				}
 
+			}
+		});
+		executorService.execute(thread);
+		
 		length = listIds.size();
 		
 		List<Integer> listIdsParam = new ArrayList<Integer>();
@@ -138,4 +157,36 @@ public class LoanListThread implements Runnable {
 		}
 	}
 
+	private static void removeInvalidIgnoreIds() {
+		Thread thread = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				while(true) {
+					try {
+						TimeUnit.MILLISECONDS.sleep(100);
+					} catch (InterruptedException e) { }
+					
+					if (null == ignoreIdsMap || 0 >= ignoreIdsMap.size()) {
+						continue;
+					}
+					
+					Set<Integer> keys = ignoreIdsMap.keySet();
+					Calendar calendar = Calendar.getInstance();
+					calendar.add(Calendar.SECOND, -10);
+					long currentTime = calendar.getTime().getTime();
+					for (Integer key : keys) {
+						if (ignoreIdsMap.get(key).getTime() < currentTime) {
+							ignoreIdsMap.remove(key);
+						}
+					}
+				}
+			}
+		});
+		
+		executorService.execute(thread);
+	}
+	
+	static {
+		removeInvalidIgnoreIds();
+	}
 }
