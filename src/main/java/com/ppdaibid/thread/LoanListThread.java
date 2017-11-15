@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -34,7 +35,7 @@ public class LoanListThread implements Runnable {
 	private static final Logger logger = Logger.getLogger(LoanListThread.class);
 	private static final ExecutorService executorService = Executors.newCachedThreadPool();
 	
-	private static Map<Integer, Date> ignoreIdsMap = new HashMap<Integer, Date>();
+	private static Map<Integer, Date> ignoreIdsMap = new ConcurrentHashMap<Integer, Date>();
 
 	//页码
 	private static int pageIndex = 1;

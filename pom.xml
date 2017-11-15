@@ -95,7 +95,7 @@
 			<artifactId>ppdai-core</artifactId>
 			<version>2.01</version>
 			<scope>system</scope>
-			<systemPath>${project.basedir}/libs/SDK-Java-2.01.jar</systemPath>
+			<systemPath>${project.basedir}/src/main/webapp/WEB-INF/lib/SDK-Java-2.01.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
