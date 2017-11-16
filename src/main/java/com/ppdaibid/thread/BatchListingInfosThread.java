@@ -70,6 +70,7 @@ public class BatchListingInfosThread implements Runnable {
 			jsonLoanInfos = jsoncontext.getJSONArray("LoanInfos");
 		} catch (Exception e) {
 			logger.error("batchListingBidInfos结果JSON解析错误：", e);
+			logger.error("JSON解析错误报文为：" + context);
 			return;
 		}
 		
