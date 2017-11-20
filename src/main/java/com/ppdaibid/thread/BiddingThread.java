@@ -12,13 +12,12 @@ import com.ppdaibid.info.LoanInfo;
 import com.ppdaibid.strategy.StrategyCheck;
 import com.ppdaibid.utils.AutoBidManager;
 import com.ppdaibid.utils.BidUtil;
-import com.ppdaibid.utils.PropertiesUtil;
 
 public class BiddingThread implements Runnable {
 	
 	private static final Logger logger = Logger.getLogger(BiddingThread.class);
 	
-	private static int amount = 51;
+//	private static int amount = 51;
 	
 	private PPDdao ppDdao = null;
 	private LoanInfo loanInfo = null;
@@ -36,44 +35,54 @@ public class BiddingThread implements Runnable {
 		if (null == this.loanInfo) {
 			return;
 		}
+		
+		Result result = null;
 		if (StrategyCheck.checkStrategy(loanInfo)) {
-			Result result = BidUtil.bidding(this.loanInfo.getListingId(), amount, false);
-			
-			String context = result.getContext();
-			if (context.contains("您的操作太频繁")) {
-				logger.error("Bidding请求太频繁，请求结果为：" + context);
-				AutoBidManager.needWait = true;
-				return;
+			result = BidUtil.bidding(this.loanInfo.getListingId(), 55, false);
+		} else if (StrategyCheck.checkStrategy1(loanInfo)) {
+			result = BidUtil.bidding(this.loanInfo.getListingId(), 53, false);
+		} else if (StrategyCheck.checkStrategy2(loanInfo)) {
+			result = BidUtil.bidding(this.loanInfo.getListingId(), 52, false);
+		}
+		
+		if (null == result) {
+			return;
+		}
+		
+		String context = result.getContext();
+		if (context.contains("您的操作太频繁")) {
+			logger.error("Bidding请求太频繁，请求结果为：" + context);
+			AutoBidManager.needWait = true;
+			return;
+		}
+		
+		if (result.isSucess()) {
+			JSONObject jsoncontext = new JSONObject(result.getContext());
+			int bidResult;
+			try {
+				bidResult = jsoncontext.getInt("Result");
+			} catch (Exception e) {
+				logger.error("JSON解析异常", e);
+				bidResult = -1;
 			}
-			
-			if (result.isSucess()) {
-				JSONObject jsoncontext = new JSONObject(result.getContext());
-				int bidResult;
-				try {
-					bidResult = jsoncontext.getInt("Result");
-				} catch (Exception e) {
-					logger.error("JSON解析异常", e);
-					bidResult = -1;
-				}
-				if (0 == bidResult) {
-					loanInfo.setBid(true);
-					logger.info("投标成功，投标结果：" + result.getContext());
-				} else {
-					logger.info("投标未中，投标结果为：" + result.getContext());
-				}
+			if (0 == bidResult) {
+				loanInfo.setBid(true);
+				logger.info("投标成功，投标结果：" + result.getContext());
+			} else {
+				logger.info("投标未中，投标结果为：" + result.getContext());
 			}
 		}
 		
 		ppDdao.addLoanInfo(loanInfo);
 	}
 	
-	static {
+	/*static {
 		try {
 			amount = Integer.parseInt(PropertiesUtil.getProperty("amount", "51"));
 		} catch (Exception e) {
 			logger.error("The count of batchListingInfos request can be request in one minute configurate error", e);
 			amount = 51;
 		}
-	}
+	}*/
 
 }
