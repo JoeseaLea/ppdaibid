@@ -12,7 +12,7 @@ public class StrategyCheck {
 				|| "A".equals(loanInfo.getCreditCode()) || "B".equals(loanInfo.getCreditCode())
 				|| "C".equals(loanInfo.getCreditCode()) || "D".equals(loanInfo.getCreditCode()))
 				&& 1 == loanInfo.getCertificateValidate()
-				&& null != loanInfo.getEducationDegree() && !"".equals(loanInfo.getEducateValidate())
+				&& null != loanInfo.getEducationDegree() && !"".equals(loanInfo.getGraduateSchool())
 				&& 12 >= loanInfo.getMonths()
 				&& 18 <= loanInfo.getRate()
 				&& 20000 >= loanInfo.getAmount()
@@ -45,7 +45,7 @@ public class StrategyCheck {
 				|| "A".equals(loanInfo.getCreditCode()) || "B".equals(loanInfo.getCreditCode())
 				|| "C".equals(loanInfo.getCreditCode()) || "D".equals(loanInfo.getCreditCode()))/*等级*/
 				&& 1 == loanInfo.getCertificateValidate() /*学历认证1*/
-				&& null != loanInfo.getEducationDegree() && !"".equals(loanInfo.getEducateValidate())/*学历不为空且毕业学校不为空*/
+				&& null != loanInfo.getEducationDegree() && !"".equals(loanInfo.getGraduateSchool())/*学历不为空且毕业学校不为空*/
 				&& 12 >= loanInfo.getMonths() /*借款周期小于12个月*/
 				&& 18 <= loanInfo.getRate() /*借款利率大于18*/
 				&& 16000 >= loanInfo.getAmount()/*借款金额小于16000*/
@@ -78,7 +78,7 @@ public class StrategyCheck {
 				|| "A".equals(loanInfo.getCreditCode()) || "B".equals(loanInfo.getCreditCode())
 				|| "C".equals(loanInfo.getCreditCode()) || "D".equals(loanInfo.getCreditCode()))/*等级*/
 				&& 0 == loanInfo.getCertificateValidate() /*学历认证0*/
-				&& null != loanInfo.getEducationDegree() && !"".equals(loanInfo.getEducateValidate())/*学历不为空且毕业学校不为空*/
+				&& null != loanInfo.getEducationDegree() && !"".equals(loanInfo.getGraduateSchool())/*学历不为空且毕业学校不为空*/
 				&& 12 >= loanInfo.getMonths() /*借款周期小于12个月*/
 				&& 18 <= loanInfo.getRate() /*借款利率大于18*/
 				&& 6000 >= loanInfo.getAmount()/*借款金额小于6000*/
