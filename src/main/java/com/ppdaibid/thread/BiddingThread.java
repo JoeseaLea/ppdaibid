@@ -37,12 +37,16 @@ public class BiddingThread implements Runnable {
 		}
 		
 		Result result = null;
-		if (StrategyCheck.checkStrategy(loanInfo)) {
-			result = BidUtil.bidding(this.loanInfo.getListingId(), 55, false);
-		} else if (StrategyCheck.checkStrategy1(loanInfo)) {
-			result = BidUtil.bidding(this.loanInfo.getListingId(), 53, false);
-		} else if (StrategyCheck.checkStrategy2(loanInfo)) {
+		if (StrategyCheck.checkStrategy99(loanInfo)) {
+			result = BidUtil.bidding(this.loanInfo.getListingId(), 99, false);
+		} else if (StrategyCheck.checkStrategy93(loanInfo)) {
+			result = BidUtil.bidding(this.loanInfo.getListingId(), 93, false);
+		} else if (StrategyCheck.checkStrategy90(loanInfo)) {
+			result = BidUtil.bidding(this.loanInfo.getListingId(), 90, false);
+		} else if (StrategyCheck.checkStrategy52(loanInfo)) {
 			result = BidUtil.bidding(this.loanInfo.getListingId(), 52, false);
+		} else if (StrategyCheck.checkStrategy51(loanInfo)) {
+			result = BidUtil.bidding(this.loanInfo.getListingId(), 51, false);
 		}
 		
 		if (null == result) {

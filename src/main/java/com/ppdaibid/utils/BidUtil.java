@@ -58,15 +58,24 @@ public class BidUtil {
 		//初始化操作
 		try {
 			OpenApiClient.Init(AccessInfo.appId, RsaCryptoHelper.PKCSType.PKCS8, AccessInfo.serverPublicKey, AccessInfo.clientPrivateKey);
-			String accessToken = "accessToken";
+//			String accessToken = AccessInfo.accessToken;
 			//请求url
 			String url = "http://gw.open.ppdai.com/invest/BidService/BidList";
-			Result result = OpenApiClient.send(url, accessToken,
-					new PropertyObject("ListingId", listingId, ValueTypeEnum.Int32),
-					new PropertyObject("StartTime", dfDay.format(startTime), ValueTypeEnum.DateTime),
-					new PropertyObject("EndTime", dfDay.format(endTime), ValueTypeEnum.DateTime),
-					new PropertyObject("PageIndex", pageIndex, ValueTypeEnum.Int32),
-					new PropertyObject("PageSize", pageSize, ValueTypeEnum.Int32));
+			Result result = null;
+			if (-1 == listingId) {
+				result = OpenApiClient.send(url, AccessInfo.accessToken,
+						new PropertyObject("StartTime", dfDay.format(startTime), ValueTypeEnum.DateTime),
+						new PropertyObject("EndTime", dfDay.format(endTime), ValueTypeEnum.DateTime),
+						new PropertyObject("PageIndex", pageIndex, ValueTypeEnum.Int32),
+						new PropertyObject("PageSize", pageSize, ValueTypeEnum.Int32));
+			} else {
+				result = OpenApiClient.send(url, AccessInfo.accessToken,
+						new PropertyObject("ListingId", listingId, ValueTypeEnum.Int32),
+						new PropertyObject("StartTime", dfDay.format(startTime), ValueTypeEnum.DateTime),
+						new PropertyObject("EndTime", dfDay.format(endTime), ValueTypeEnum.DateTime),
+						new PropertyObject("PageIndex", pageIndex, ValueTypeEnum.Int32),
+						new PropertyObject("PageSize", pageSize, ValueTypeEnum.Int32));
+			}
 			return result;
 		} catch (Exception e) {
 			logger.error("获取用户投标记录异常", e);
@@ -203,6 +212,26 @@ public class BidUtil {
 			logger.error("获取用户投资列表的还款情况异常", e);
 		}
 
+		return null;
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public static Result volumeList(int page, Date date) {
+		try {
+			//初始化操作
+			OpenApiClient.Init(AccessInfo.appId, RsaCryptoHelper.PKCSType.PKCS8, AccessInfo.serverPublicKey, AccessInfo.clientPrivateKey);
+			 //请求url
+			String url = "http://gw.open.ppdai.com/charge/volume/list";
+			PropertyObject propertyObjects[] = {new PropertyObject("page", page, ValueTypeEnum.Int32),
+					new PropertyObject("date",dfDay.format(date), ValueTypeEnum.DateTime)};
+			Result result = OpenApiClient.send(url, propertyObjects);
+			return result;
+		} catch (Exception e) {
+			logger.error("获取投资扣费对账明细", e);
+		}
 		return null;
 	}
 }

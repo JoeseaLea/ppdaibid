@@ -4,6 +4,7 @@ import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import org.junit.Test;
@@ -20,7 +21,9 @@ public class BidUtilTest {
 
 	@Test
 	public void testBidList() {
-		fail("Not yet implemented");
+		Date date = Calendar.getInstance().getTime();
+		Result result = BidUtil.bidList(-1, date, date, 1, 20);
+		System.out.println(result.getContext());
 	}
 
 	@Test
@@ -31,7 +34,7 @@ public class BidUtilTest {
 	@Test
 	public void testLoanList() {
 		Calendar c = Calendar.getInstance();
-		c.add(Calendar.YEAR, -2);
+		c.add(Calendar.SECOND, -30);
 		Result result = BidUtil.loanList(1, c.getTime());
 		System.out.println(String.format("返回结果:%s", result.isSucess() ? result.getContext() : result.getErrorMessage()));
 	}
@@ -57,5 +60,11 @@ public class BidUtilTest {
 	@Test
 	public void testFetchLenderRepayment() {
 		fail("Not yet implemented");
+	}
+	
+	@Test
+	public void testVolumeList() {
+		Result result = BidUtil.volumeList(1, new Date());
+		System.out.println(result.getContext());
 	}
 }
