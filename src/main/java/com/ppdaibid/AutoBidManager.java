@@ -1,4 +1,4 @@
-package com.ppdaibid.utils;
+package com.ppdaibid;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -11,6 +11,7 @@ import org.springframework.web.context.WebApplicationContext;
 import com.ppdaibid.dao.PPDdao;
 import com.ppdaibid.dao.impl.PPDdaoImpl;
 import com.ppdaibid.thread.LoanListThread;
+import com.ppdaibid.utils.PropertiesUtil;
 
 public class AutoBidManager {
 	private static final Logger logger = Logger.getLogger(AutoBidManager.class);

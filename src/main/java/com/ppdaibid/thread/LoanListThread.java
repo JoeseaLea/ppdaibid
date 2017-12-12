@@ -19,10 +19,10 @@ import org.springframework.web.context.ContextLoader;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.ppdai.open.core.Result;
+import com.ppdaibid.AutoBidManager;
 import com.ppdaibid.dao.PPDdao;
 import com.ppdaibid.dao.impl.PPDdaoImpl;
 import com.ppdaibid.info.LoanInfo;
-import com.ppdaibid.utils.AutoBidManager;
 import com.ppdaibid.utils.BidUtil;
 import com.ppdaibid.utils.PropertiesUtil;
 

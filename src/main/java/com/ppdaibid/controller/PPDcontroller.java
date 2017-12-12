@@ -72,6 +72,4 @@ public class PPDcontroller {
 		this.ppdservice.startAutoBid(auto);
 		return "SUCCESS";
 	}
-	
-	
 }

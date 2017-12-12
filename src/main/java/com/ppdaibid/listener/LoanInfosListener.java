@@ -3,7 +3,7 @@ package com.ppdaibid.listener;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-import com.ppdaibid.utils.AutoBidManager;
+import com.ppdaibid.AutoBidManager;
 
 /**
  * Application Lifecycle Listener implementation class LoanInfosListener

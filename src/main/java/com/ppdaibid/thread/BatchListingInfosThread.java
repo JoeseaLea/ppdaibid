@@ -14,8 +14,8 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.ppdai.open.core.Result;
+import com.ppdaibid.AutoBidManager;
 import com.ppdaibid.info.LoanInfo;
-import com.ppdaibid.utils.AutoBidManager;
 import com.ppdaibid.utils.BidUtil;
 import com.ppdaibid.utils.PropertiesUtil;
 
