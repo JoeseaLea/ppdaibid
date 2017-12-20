@@ -6,7 +6,10 @@
         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
         http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
-    <bean id="ppddao" class="com.ppdaibid.dao.impl.PPDdaoImpl">
+    <bean id="bidDao" class="com.ppdaibid.dao.impl.BidDaoImpl">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+    <bean id="debtDao" class="com.ppdaibid.dao.impl.DebtDaoImpl">
         <property name="dataSource" ref="dataSource"/>
     </bean>
     

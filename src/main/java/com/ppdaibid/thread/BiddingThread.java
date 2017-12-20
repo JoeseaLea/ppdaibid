@@ -7,10 +7,10 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.ppdai.open.core.Result;
 import com.ppdaibid.AutoBidManager;
-import com.ppdaibid.dao.PPDdao;
-import com.ppdaibid.dao.impl.PPDdaoImpl;
+import com.ppdaibid.dao.BidDao;
+import com.ppdaibid.dao.impl.BidDaoImpl;
 import com.ppdaibid.info.LoanInfo;
-import com.ppdaibid.strategy.StrategyCheck;
+import com.ppdaibid.strategy.BidStrategyCheck;
 import com.ppdaibid.utils.BidUtil;
 
 public class BiddingThread implements Runnable {
@@ -19,13 +19,13 @@ public class BiddingThread implements Runnable {
 	
 //	private static int amount = 51;
 	
-	private PPDdao ppDdao = null;
+	private BidDao bidDao = null;
 	private LoanInfo loanInfo = null;
 	
 	public BiddingThread(LoanInfo loanInfo) {
 		WebApplicationContext context = ContextLoader.getCurrentWebApplicationContext();
-		PPDdaoImpl ppDdaoImpl = context.getBean("ppddao", PPDdaoImpl.class);
-		this.ppDdao = ppDdaoImpl;
+		BidDaoImpl bidDaoImpl = context.getBean("bidDao", BidDaoImpl.class);
+		this.bidDao = bidDaoImpl;
 		
 		this.loanInfo = loanInfo;
 	}
@@ -37,15 +37,15 @@ public class BiddingThread implements Runnable {
 		}
 		
 		Result result = null;
-		if (StrategyCheck.checkStrategy99(loanInfo)) {
+		if (BidStrategyCheck.checkStrategy99(loanInfo)) {
 			result = BidUtil.bidding(this.loanInfo.getListingId(), 99, false);
-		} else if (StrategyCheck.checkStrategy93(loanInfo)) {
+		} else if (BidStrategyCheck.checkStrategy93(loanInfo)) {
 			result = BidUtil.bidding(this.loanInfo.getListingId(), 93, false);
-		} else if (StrategyCheck.checkStrategy90(loanInfo)) {
+		} else if (BidStrategyCheck.checkStrategy90(loanInfo)) {
 			result = BidUtil.bidding(this.loanInfo.getListingId(), 90, false);
-		} else if (StrategyCheck.checkStrategy52(loanInfo)) {
+		} else if (BidStrategyCheck.checkStrategy52(loanInfo)) {
 			result = BidUtil.bidding(this.loanInfo.getListingId(), 52, false);
-		} else if (StrategyCheck.checkStrategy51(loanInfo)) {
+		} else if (BidStrategyCheck.checkStrategy51(loanInfo)) {
 			result = BidUtil.bidding(this.loanInfo.getListingId(), 51, false);
 		}
 		
@@ -56,7 +56,7 @@ public class BiddingThread implements Runnable {
 		String context = result.getContext();
 		if (context.contains("您的操作太频繁")) {
 			logger.error("Bidding请求太频繁，请求结果为：" + context);
-			AutoBidManager.needWait = true;
+			AutoBidManager.loanListNeedWait = true;
 			return;
 		}
 		
@@ -77,7 +77,7 @@ public class BiddingThread implements Runnable {
 			}
 		}
 		
-		ppDdao.addLoanInfo(loanInfo);
+		bidDao.addLoanInfo(loanInfo);
 	}
 	
 	/*static {

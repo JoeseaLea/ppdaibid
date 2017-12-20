@@ -6,7 +6,7 @@ import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
 
-import com.ppdaibid.dao.PPDdao;
+import com.ppdaibid.dao.BidDao;
 import com.ppdaibid.info.LoanInfo;
 import com.ppdaibid.service.PPDservice;
 
@@ -14,11 +14,11 @@ import com.ppdaibid.service.PPDservice;
 public class PPDserviceImpl implements PPDservice {
 
 	@Resource
-	public PPDdao ppddao;
+	public BidDao bidDao;
 	
 	@Override
 	public void addLoanInfos(List<LoanInfo> loanInfos) {
-		ppddao.addLoanInfos(loanInfos);
+		bidDao.addLoanInfos(loanInfos);
 	}
 
 	@Override

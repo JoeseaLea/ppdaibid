@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.ppdaibid.info.LoanInfo;
 
-public interface PPDdao {
+public interface BidDao {
 
 	public void addLoanInfo(LoanInfo loanInfo);
 	

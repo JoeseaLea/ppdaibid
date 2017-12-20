@@ -50,3 +50,34 @@ CREATE TABLE loanInfo(
 	isBid BOOLEAN DEFAULT FALSE comment '是否已投标',
 	UNIQUE KEY username_listingid (listingId)
 );
+DROP TABLE IF EXISTS debtinfo;
+CREATE TABLE debtinfo(
+	id INT(12) PRIMARY KEY AUTO_INCREMENT COMMENT '主键',
+	debtdealId INT(12) NOT NULL COMMENT '债权ID',
+	owingNumber INT(4) NOT NULL COMMENT '剩余期数',
+	priceforSale DOUBLE(12, 2) COMMENT '转让价',
+	listingId INT(12) NOT NULL COMMENT '列表ID',
+	creditCode VARCHAR(4) COMMENT '列表等级',
+	debtId INT(12) COMMENT '债转编号',
+	seller VARCHAR(32) COMMENT '转出人',
+	statusId INT(2) COMMENT '1出售中2已完成 0其它无效状态',
+	lender VARCHAR(32) COMMENT '投标人',
+	bidDateTime VARCHAR(32) COMMENT '投标时间',
+	owingPrincipal DOUBLE(12, 2) COMMENT '待还本金',
+	owingInterest DOUBLE(12, 2) COMMENT '待收利息',
+	days INT(8) COMMENT '距离下次还款的天数',
+	priceforSaleRate DOUBLE(12, 2) COMMENT '转让价利率',
+	preferenceDegree DOUBLE(12, 2) COMMENT '优惠度',
+	listingAmount DOUBLE(12, 2) COMMENT '发标金额',
+	listingMonths INT(8) COMMENT '标期限',
+	listingTime VARCHAR(32) COMMENT '发标时间',
+	listingRate DOUBLE(12, 3) COMMENT '标的利率',
+	pastDueNumber INT(8) COMMENT '曾逾期期数',
+	currentCreditCode VARCHAR(4) COMMENT '当前评级',
+	allowanceRadio DOUBLE(12, 2) COMMENT '折让比例（%号之前的数值）',
+	pastDueDay INT(8) COMMENT '曾最大逾期天数',
+	insertTime VARCHAR(32) COMMENT '数据爬取时间',
+	lastupdateTime VARCHAR(32) COMMENT '数据最后更新时间',
+	isBid BOOLEAN COMMENT '是否已投标（0:未投标， 1:已投标）',
+	UNIQUE KEY username_listingid (debtdealId)
+);

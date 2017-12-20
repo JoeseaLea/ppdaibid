@@ -10,12 +10,12 @@ import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 
 import com.ppdaibid.dao.BaseDao;
-import com.ppdaibid.dao.PPDdao;
+import com.ppdaibid.dao.BidDao;
 import com.ppdaibid.info.LoanInfo;
 import com.ppdaibid.utils.DateFormateUtil;
 
 @Repository
-public class PPDdaoImpl extends BaseDao implements PPDdao {
+public class BidDaoImpl extends BaseDao implements BidDao {
 	
 	
 	

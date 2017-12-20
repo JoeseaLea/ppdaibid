@@ -4,6 +4,7 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
 import com.ppdaibid.AutoBidManager;
+import com.ppdaibid.DebtManager;
 
 /**
  * Application Lifecycle Listener implementation class LoanInfosListener
@@ -22,7 +23,8 @@ public class LoanInfosListener implements ServletContextListener {
      * @see ServletContextListener#contextInitialized(ServletContextEvent)
      */
     public void contextInitialized(ServletContextEvent sce)  {
-    		AutoBidManager.startLoanInfos();
+//    		AutoBidManager.startLoanInfos();
+    		DebtManager.startDebtTask();
     }
 	
 }

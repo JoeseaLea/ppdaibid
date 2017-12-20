@@ -20,8 +20,8 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.ppdai.open.core.Result;
 import com.ppdaibid.AutoBidManager;
-import com.ppdaibid.dao.PPDdao;
-import com.ppdaibid.dao.impl.PPDdaoImpl;
+import com.ppdaibid.dao.BidDao;
+import com.ppdaibid.dao.impl.BidDaoImpl;
 import com.ppdaibid.info.LoanInfo;
 import com.ppdaibid.utils.BidUtil;
 import com.ppdaibid.utils.PropertiesUtil;
@@ -43,7 +43,7 @@ public class LoanListThread implements Runnable {
 	private static int batchListingInfosSize = 10;
 	private static int validTime = -12;
 	
-	private PPDdao ppDdao = null;
+	private BidDao bidDao = null;
 	
 	public LoanListThread() {
 		this(1);
@@ -67,8 +67,8 @@ public class LoanListThread implements Runnable {
 		}
 		
 		WebApplicationContext context = ContextLoader.getCurrentWebApplicationContext();
-		PPDdaoImpl ppDdaoImpl = context.getBean("ppddao", PPDdaoImpl.class);
-		ppDdao = ppDdaoImpl;
+		BidDaoImpl bidDaoImpl = context.getBean("bidDao", BidDaoImpl.class);
+		bidDao = bidDaoImpl;
 	}
 
 	@Override
@@ -78,19 +78,19 @@ public class LoanListThread implements Runnable {
 		Map<Integer, LoanInfo> loanInfosMap;
 
 		listIds = new ArrayList<Integer>();
-		loanInfosMap = new HashMap<Integer, LoanInfo>();
+		loanInfosMap = new ConcurrentHashMap<Integer, LoanInfo>();
 
 		Calendar c = Calendar.getInstance();
 		c.add(Calendar.SECOND, validTime);
 
-		List<Integer> ignoreIds = ppDdao.getCanBeIgnoreIds();
+		List<Integer> ignoreIds = bidDao.getCanBeIgnoreIds();
 
 		Result result = BidUtil.loanList(pageIndex, c.getTime());
 
 		String context = result.getContext();
 		if (context.contains("您的操作太频繁")) {
 			logger.error("LoanInfo请求太频繁，请求结果为：" + context);
-			AutoBidManager.needWait = true;
+			AutoBidManager.loanListNeedWait = true;
 			return;
 		}
 		

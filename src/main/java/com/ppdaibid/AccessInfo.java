@@ -25,7 +25,7 @@ public class AccessInfo {
 	 * 设备指纹，对应设备的唯一标识
 	 */
 //	public static final String deviceFP = UUID.randomUUID().toString().replaceAll("-", "");
-	public static final String deviceFP = "013a9dc7138c4aa2839c1623a5946ef3";
+	public static final String deviceFP = "6b1a639dcf9f40d19cb97b6bf846d304";
 	/**
 	 * 用户在第三方平台上的唯一标识
 	 */
@@ -35,7 +35,7 @@ public class AccessInfo {
 	 * 用户给第三方平台的授权访问令牌,有效期7天
 	 */
 //	public static String accessToken = null;
-	public static final String accessToken = "ad57c6d0-693b-461c-8cf5-19d8a5068f67";
+	public static final String accessToken = "42422f36-fd36-4548-8bf8-84afe34c3948";
 	/**
 	 * 用户给第三方授权使用刷新令牌,有效期90天
 	 */

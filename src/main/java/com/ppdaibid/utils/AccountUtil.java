@@ -5,6 +5,10 @@ import org.apache.log4j.Logger;
 import com.ppdai.open.core.*;
 import com.ppdaibid.AccessInfo;
 
+/**
+ * 帐号
+ * @author Joesea Lea
+ */
 public class AccountUtil {
 	private static final Logger logger = Logger.getLogger(AccountUtil.class);
 	

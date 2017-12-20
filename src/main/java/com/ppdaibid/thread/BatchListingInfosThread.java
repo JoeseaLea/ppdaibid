@@ -54,7 +54,7 @@ public class BatchListingInfosThread implements Runnable {
 		String context = result.getContext();
 		if (context.contains("您的操作太频繁")) {
 			logger.error("LoanInfo请求太频繁，请求结果为：" + context);
-			AutoBidManager.needWait = true;
+			AutoBidManager.loanListNeedWait = true;
 			return;
 		}
 		

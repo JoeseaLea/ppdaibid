@@ -42,7 +42,7 @@ public class BidUtilTest {
 	@Test
 	public void testBatchListingInfos() throws Exception {
 		List<Integer> listIds = new ArrayList<Integer>();
-		listIds.add(81310621);
+		listIds.add(54282997);
 		System.out.println(BidUtil.batchListingInfos(listIds).getContext());
 		
 	}

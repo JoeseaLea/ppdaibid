@@ -5,7 +5,7 @@ import java.util.Date;
 
 import com.ppdaibid.info.LoanInfo;
 
-public class StrategyCheck {
+public class BidStrategyCheck {
 	
 	/*投标金额99 学历93天 创建日期：20171030
 	历史修改记录

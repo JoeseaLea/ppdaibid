@@ -18,9 +18,9 @@ public class AccountUtilTest {
 
 	@Test
 	public void testSmsauthcodelogin() {
-		System.out.println(AccountUtil.smsauthcodelogin("189155")
+		System.out.println(AccountUtil.smsauthcodelogin("213973")
 				.getContext());
-		//{"ResultCode":0,"ResultMessage":"OK","OpenID":"fbb020313ab74092820c5b8a0a1ea3cd","AccessToken":"ad57c6d0-693b-461c-8cf5-19d8a5068f67","RefreshToken":"f9424ab4-ab22-45e2-90a1-6828b25689d4","ExpiresIn":604800}
+		//{"ResultCode":0,"ResultMessage":"OK","OpenID":"fbb020313ab74092820c5b8a0a1ea3cd","AccessToken":"42422f36-fd36-4548-8bf8-84afe34c3948","RefreshToken":"0fdec2fb-bb5b-4a95-bfeb-93ba64653fa8","ExpiresIn":604800}
 	}
 
 }

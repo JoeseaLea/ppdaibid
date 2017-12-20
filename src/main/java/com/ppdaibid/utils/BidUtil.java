@@ -14,6 +14,10 @@ import com.ppdai.open.core.RsaCryptoHelper;
 import com.ppdai.open.core.ValueTypeEnum;
 import com.ppdaibid.AccessInfo;
 
+/**
+ * 投标接口
+ * @author Joesea Lea
+ */
 public class BidUtil {
 	private static Logger logger = Logger.getLogger(BidUtil.class);
 	
@@ -155,7 +159,7 @@ public class BidUtil {
 	/**
 	 * 批量获取散标投资记录
 	 * @param listIds 列表IDs
-	 * @return
+	 * @return result
 	 */
 	public static Result batchListingBidInfos(List<Integer> listIds) {
 		try {
