@@ -29,6 +29,14 @@ public class DebtInfo {
 	 */
 	private String creditCode;
 	/**
+	 * 借款金额
+	 */
+	private double amount;
+	/**
+	 * 期限
+	 */
+	private int months;
+	/**
 	 * 债转编号
 	 */
 	private int debtId;
@@ -101,6 +109,143 @@ public class DebtInfo {
 	 */
 	private int pastDueDay;
 	
+	/**
+	 * 首次投资时间
+	 */
+	private Date fistBidTime;
+	/**
+	 * 末笔投资时间
+	 */
+	private Date lastBidTime;
+	/**
+	 * 投标人数
+	 */
+	private int lenderCount;
+	/**
+	 * 成交日期
+	 */
+	private Date auditingTime;
+	/**
+	 * 可投标金额
+	 */
+	private double remainFunding;
+	
+	/**
+	 * 截止时间
+	 */
+	private String deadLineTimeOrRemindTimeStr;
+	/**
+	 * 利率
+	 */
+	private double currentRate;
+	/**
+	 * 借款人的用户名
+	 */
+	private String borrowName;
+	/**
+	 * 性别 1 男 2 女 0 未知
+	 */
+	private int gender;
+	/**
+	 * 学历
+	 */
+	private String educationDegree;
+	/**
+	 * 毕业院校
+	 */
+	private String graduateSchool;
+	/**
+	 * 学习形式
+	 */
+	private String studyStyle;
+	/**
+	 * 年龄
+	 */
+	private int age;
+	/**
+	 * 成功借款次数
+	 */
+	private int successCount;
+	/**
+	 * 流标次数
+	 */
+	private int wasteCount;
+	/**
+	 * 撤标次数
+	 */
+	private int cancelCount;
+	/**
+	 * 失败次数
+	 */
+	private int failedCount;
+	/**
+	 * 正常还清次数
+	 */
+	private int normalCount;
+	/**
+	 * 逾期(1-15)还清次数
+	 */
+	private int overdueLessCount;
+	/**
+	 * 逾期(15天以上)还清次数
+	 */
+	private int overdueMoreCount;
+	/**
+	 * 待还金额
+	 */
+	private double owingAmount;
+	/**
+	 * 待收金额
+	 */
+	private double amountToReceive;
+	/**
+	 * 第一次成功借款时间
+	 */
+	private Date firstSuccessBorrowTime;
+	/**
+	 * 注册时间
+	 */
+	private Date registerTime;
+	/**
+	 * 学历认证 0 未认证 1已认证
+	 */
+	private int certificateValidate;
+	/**
+	 * 户籍认证 0 未认证 1已认证
+	 */
+	private int nciicIdentityCheck;
+	/**
+	 * 手机认证 0 未认证 1已认证
+	 */
+	private int phoneValidate;
+	/**
+	 * 视屏认证 0 未认证 1已认证
+	 */
+	private int videoValidate;
+	/**
+	 * 征信认证 0 未认证 1已认证
+	 */
+	private int creditValidate;
+	/**
+	 * 学籍认证 0 未认证 1已认证
+	 */
+	private int educateValidate;
+	/**
+	 * 最后一次成功借款时间
+	 */
+	private Date lastSuccessBorrowTime;
+	/**
+	 * 单笔最高借款金额
+	 */
+	private double highestPrincipal;
+	/**
+	 * 历史最高负债
+	 */
+	private double highestDebt;
+	/**
+	 * 累计借款金额
+	 */
+	private double totalPrincipal;
 	/**
 	 * 数据爬取时间
 	 */
@@ -252,6 +397,222 @@ public class DebtInfo {
 	public void setPastDueDay(int pastDueDay) {
 		this.pastDueDay = pastDueDay;
 	}
+	public Date getFistBidTime() {
+		return fistBidTime;
+	}
+	public void setFistBidTime(Date fistBidTime) {
+		this.fistBidTime = fistBidTime;
+	}
+	public Date getLastBidTime() {
+		return lastBidTime;
+	}
+	public void setLastBidTime(Date lastBidTime) {
+		this.lastBidTime = lastBidTime;
+	}
+	public int getLenderCount() {
+		return lenderCount;
+	}
+	public void setLenderCount(int lenderCount) {
+		this.lenderCount = lenderCount;
+	}
+	public Date getAuditingTime() {
+		return auditingTime;
+	}
+	public void setAuditingTime(Date auditingTime) {
+		this.auditingTime = auditingTime;
+	}
+	public String getDeadLineTimeOrRemindTimeStr() {
+		return deadLineTimeOrRemindTimeStr;
+	}
+	public void setDeadLineTimeOrRemindTimeStr(String deadLineTimeOrRemindTimeStr) {
+		this.deadLineTimeOrRemindTimeStr = deadLineTimeOrRemindTimeStr;
+	}
+	public double getCurrentRate() {
+		return currentRate;
+	}
+	public void setCurrentRate(double currentRate) {
+		this.currentRate = currentRate;
+	}
+	public String getBorrowName() {
+		return borrowName;
+	}
+	public void setBorrowName(String borrowName) {
+		this.borrowName = borrowName;
+	}
+	public int getGender() {
+		return gender;
+	}
+	public void setGender(int gender) {
+		this.gender = gender;
+	}
+	public String getEducationDegree() {
+		return educationDegree;
+	}
+	public void setEducationDegree(String educationDegree) {
+		this.educationDegree = educationDegree;
+	}
+	public String getGraduateSchool() {
+		return graduateSchool;
+	}
+	public void setGraduateSchool(String graduateSchool) {
+		this.graduateSchool = graduateSchool;
+	}
+	public String getStudyStyle() {
+		return studyStyle;
+	}
+	public void setStudyStyle(String studyStyle) {
+		this.studyStyle = studyStyle;
+	}
+	public int getAge() {
+		return age;
+	}
+	public void setAge(int age) {
+		this.age = age;
+	}
+	public int getSuccessCount() {
+		return successCount;
+	}
+	public void setSuccessCount(int successCount) {
+		this.successCount = successCount;
+	}
+	public int getWasteCount() {
+		return wasteCount;
+	}
+	public void setWasteCount(int wasteCount) {
+		this.wasteCount = wasteCount;
+	}
+	public int getCancelCount() {
+		return cancelCount;
+	}
+	public void setCancelCount(int cancelCount) {
+		this.cancelCount = cancelCount;
+	}
+	public int getFailedCount() {
+		return failedCount;
+	}
+	public void setFailedCount(int failedCount) {
+		this.failedCount = failedCount;
+	}
+	public int getNormalCount() {
+		return normalCount;
+	}
+	public void setNormalCount(int normalCount) {
+		this.normalCount = normalCount;
+	}
+	public int getOverdueLessCount() {
+		return overdueLessCount;
+	}
+	public void setOverdueLessCount(int overdueLessCount) {
+		this.overdueLessCount = overdueLessCount;
+	}
+	public int getOverdueMoreCount() {
+		return overdueMoreCount;
+	}
+	public void setOverdueMoreCount(int overdueMoreCount) {
+		this.overdueMoreCount = overdueMoreCount;
+	}
+	public double getOwingAmount() {
+		return owingAmount;
+	}
+	public void setOwingAmount(double owingAmount) {
+		this.owingAmount = owingAmount;
+	}
+	public double getAmountToReceive() {
+		return amountToReceive;
+	}
+	public void setAmountToReceive(double amountToReceive) {
+		this.amountToReceive = amountToReceive;
+	}
+	public Date getFirstSuccessBorrowTime() {
+		return firstSuccessBorrowTime;
+	}
+	public void setFirstSuccessBorrowTime(Date firstSuccessBorrowTime) {
+		this.firstSuccessBorrowTime = firstSuccessBorrowTime;
+	}
+	public Date getRegisterTime() {
+		return registerTime;
+	}
+	public void setRegisterTime(Date registerTime) {
+		this.registerTime = registerTime;
+	}
+	public int getCertificateValidate() {
+		return certificateValidate;
+	}
+	public void setCertificateValidate(int certificateValidate) {
+		this.certificateValidate = certificateValidate;
+	}
+	public int getNciicIdentityCheck() {
+		return nciicIdentityCheck;
+	}
+	public void setNciicIdentityCheck(int nciicIdentityCheck) {
+		this.nciicIdentityCheck = nciicIdentityCheck;
+	}
+	public int getPhoneValidate() {
+		return phoneValidate;
+	}
+	public void setPhoneValidate(int phoneValidate) {
+		this.phoneValidate = phoneValidate;
+	}
+	public int getVideoValidate() {
+		return videoValidate;
+	}
+	public void setVideoValidate(int videoValidate) {
+		this.videoValidate = videoValidate;
+	}
+	public int getCreditValidate() {
+		return creditValidate;
+	}
+	public void setCreditValidate(int creditValidate) {
+		this.creditValidate = creditValidate;
+	}
+	public int getEducateValidate() {
+		return educateValidate;
+	}
+	public void setEducateValidate(int educateValidate) {
+		this.educateValidate = educateValidate;
+	}
+	public Date getLastSuccessBorrowTime() {
+		return lastSuccessBorrowTime;
+	}
+	public void setLastSuccessBorrowTime(Date lastSuccessBorrowTime) {
+		this.lastSuccessBorrowTime = lastSuccessBorrowTime;
+	}
+	public double getHighestPrincipal() {
+		return highestPrincipal;
+	}
+	public void setHighestPrincipal(double highestPrincipal) {
+		this.highestPrincipal = highestPrincipal;
+	}
+	public double getHighestDebt() {
+		return highestDebt;
+	}
+	public void setHighestDebt(double highestDebt) {
+		this.highestDebt = highestDebt;
+	}
+	public double getTotalPrincipal() {
+		return totalPrincipal;
+	}
+	public void setTotalPrincipal(double totalPrincipal) {
+		this.totalPrincipal = totalPrincipal;
+	}
+	public double getAmount() {
+		return amount;
+	}
+	public void setAmount(double amount) {
+		this.amount = amount;
+	}
+	public int getMonths() {
+		return months;
+	}
+	public void setMonths(int months) {
+		this.months = months;
+	}
+	public double getRemainFunding() {
+		return remainFunding;
+	}
+	public void setRemainFunding(double remainFunding) {
+		this.remainFunding = remainFunding;
+	}
 	public Date getInsertTime() {
 		return insertTime;
 	}
@@ -303,5 +664,48 @@ public class DebtInfo {
 		currentCreditCode = JsonUtil.getString(jsonDebtInfo, "CurrentCreditCode", null);
 		allowanceRadio = JsonUtil.getDouble(jsonDebtInfo, "AllowanceRadio", 0);
 		pastDueDay = JsonUtil.getInt(jsonDebtInfo, "PastDueDay", 0);
+	}
+	
+public void setListingInfo(JSONObject listingInfos) {
+		
+		fistBidTime = DateFormateUtil.formateDate(JsonUtil.getString(listingInfos, "FistBidTime", null));
+		lastBidTime = DateFormateUtil.formateDate(JsonUtil.getString(listingInfos, "LastBidTime", null));
+		lenderCount = JsonUtil.getInt(listingInfos, "LenderCount", 0);
+		auditingTime = DateFormateUtil.formateDate(JsonUtil.getString(listingInfos, "AuditingTime", null));
+		remainFunding = JsonUtil.getDouble(listingInfos, "RemainFunding", 0.0);
+		deadLineTimeOrRemindTimeStr = JsonUtil.getString(listingInfos, "DeadLineTimeOrRemindTimeStr", null);
+		creditCode = JsonUtil.getString(listingInfos, "CreditCode", null);
+//		listingId = JsonUtil.getInt(listingInfos, "ListingId");
+		amount = JsonUtil.getDouble(listingInfos, "Amount", 0.0);
+		months = JsonUtil.getInt(listingInfos, "Months", 0);
+		currentRate = JsonUtil.getDouble(listingInfos, "CurrentRate", 0.0);
+		borrowName = JsonUtil.getString(listingInfos, "BorrowName", null);
+		gender = JsonUtil.getInt(listingInfos, "Gender", 0);
+		educationDegree = JsonUtil.getString(listingInfos, "EducationDegree", null);
+		graduateSchool = JsonUtil.getString(listingInfos, "GraduateSchool", null);
+		studyStyle = JsonUtil.getString(listingInfos, "StudyStyle", null);
+		age = JsonUtil.getInt(listingInfos, "Age", 0);
+		successCount = JsonUtil.getInt(listingInfos, "SuccessCount", 0);
+		wasteCount = JsonUtil.getInt(listingInfos, "WasteCount", 0);
+		cancelCount = JsonUtil.getInt(listingInfos, "CancelCount", 0);
+		failedCount = JsonUtil.getInt(listingInfos, "FailedCount", 0);
+		normalCount = JsonUtil.getInt(listingInfos, "NormalCount", 0);
+		overdueLessCount = JsonUtil.getInt(listingInfos, "OverdueLessCount", 0);
+		overdueMoreCount = JsonUtil.getInt(listingInfos, "OverdueMoreCount", 0);
+		owingPrincipal = JsonUtil.getDouble(listingInfos, "OwingPrincipal", 0.0);
+		owingAmount = JsonUtil.getDouble(listingInfos, "OwingAmount", 0.0);
+		amountToReceive = JsonUtil.getDouble(listingInfos, "AmountToReceive", 0.0);
+		firstSuccessBorrowTime = DateFormateUtil.formateDate(JsonUtil.getString(listingInfos, "FirstSuccessBorrowTime", null));
+		registerTime = DateFormateUtil.formateDate(JsonUtil.getString(listingInfos, "RegisterTime", null));
+		certificateValidate = JsonUtil.getInt(listingInfos, "CertificateValidate", 0);
+		nciicIdentityCheck = JsonUtil.getInt(listingInfos, "NciicIdentityCheck", 0);
+		phoneValidate = JsonUtil.getInt(listingInfos, "PhoneValidate", 0);
+		videoValidate = JsonUtil.getInt(listingInfos, "VideoValidate", 0);
+		creditValidate = JsonUtil.getInt(listingInfos, "CreditValidate", 0);
+		educateValidate = JsonUtil.getInt(listingInfos, "EducateValidate", 0);
+		lastSuccessBorrowTime = DateFormateUtil.formateDate(JsonUtil.getString(listingInfos, "LastSuccessBorrowTime", null));
+		highestPrincipal = JsonUtil.getDouble(listingInfos, "HighestPrincipal", 0.0);
+		highestDebt = JsonUtil.getDouble(listingInfos, "HighestDebt", 0.0);
+		totalPrincipal = JsonUtil.getDouble(listingInfos, "TotalPrincipal", 0.0);
 	}
 }
