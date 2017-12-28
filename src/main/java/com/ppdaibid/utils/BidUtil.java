@@ -2,8 +2,11 @@ package com.ppdaibid.utils;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 
@@ -23,6 +26,14 @@ public class BidUtil {
 	
 	public static DateFormat dfDay = new SimpleDateFormat("yyyy-MM-dd");
 	public static DateFormat dfMillisecond = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+	
+	private static LinkedBlockingQueue<Date> loanListQueue = new LinkedBlockingQueue<Date>();
+	private static LinkedBlockingQueue<Date> batchListingInfosQueue = new LinkedBlockingQueue<Date>();
+	private static LinkedBlockingQueue<Date> biddingQueue = new LinkedBlockingQueue<Date>();
+	
+	private static int loanListFrequency = 600;
+	private static int batchListingInfosFrequency = 500;
+	private static int biddingFrequency = 2500;
 
 	/**
 	 * 投标接口
@@ -32,7 +43,13 @@ public class BidUtil {
 	 * @return result 投标结果
 	 */
 	public static Result bidding(int listingId, int amount, boolean useCoupon) {
+		
+		if (biddingQueue.size() > biddingFrequency) {
+			return overLimitFrequency();
+		}
+		
 		try {
+			biddingQueue.put(Calendar.getInstance().getTime());
 			//初始化操作
 			OpenApiClient.Init(AccessInfo.appId, RsaCryptoHelper.PKCSType.PKCS8, AccessInfo.serverPublicKey, AccessInfo.clientPrivateKey);
 			String accessToken = AccessInfo.accessToken;
@@ -88,12 +105,12 @@ public class BidUtil {
 	}
 	
 	/**
-	 * 跟投）用户最近投资标的信息（批量）
+	 * （跟投）用户最近投资标的信息（批量）
 	 * @param lenderNames 投资用户名列表，个数1至5 （lenderNames长度为1到5）
 	 * @param topIndex 记录条数，1至20条
 	 * @return result
 	 */
-	public static Result atchLenderBidList(List<String> lenderNames, int topIndex) {
+	public static Result batchLenderBidList(List<String> lenderNames, int topIndex) {
 		try {
 			//初始化操作
 			OpenApiClient.Init(AccessInfo.appId, RsaCryptoHelper.PKCSType.PKCS8, AccessInfo.serverPublicKey, AccessInfo.clientPrivateKey);
@@ -121,13 +138,18 @@ public class BidUtil {
 	 * @return result
 	 */
 	public static Result loanList(int pageIndex, Date startDateTime) {
+		Result result = null;
+		if (loanListQueue.size() > loanListFrequency) {
+			return overLimitFrequency();
+		}
 
 		try {
+			loanListQueue.put(Calendar.getInstance().getTime());
 			// 初始化操作
 			OpenApiClient.Init(AccessInfo.appId, RsaCryptoHelper.PKCSType.PKCS8, AccessInfo.serverPublicKey, AccessInfo.clientPrivateKey);
 			// 请求url
 			String url = "http://gw.open.ppdai.com/invest/LLoanInfoService/LoanList";
-			Result result = OpenApiClient.send(url, new PropertyObject("PageIndex", pageIndex, ValueTypeEnum.Int32),
+			result = OpenApiClient.send(url, new PropertyObject("PageIndex", pageIndex, ValueTypeEnum.Int32),
 					new PropertyObject("StartDateTime", dfMillisecond.format(startDateTime), ValueTypeEnum.DateTime));
 			return result;
 		} catch (Exception e) {
@@ -142,7 +164,12 @@ public class BidUtil {
 	 * @return result
 	 */
 	public static Result batchListingInfos(List<Integer> listIds) {
+		
+		if (batchListingInfosQueue.size() >= batchListingInfosFrequency) {
+			return overLimitFrequency();
+		}
 		try {
+			batchListingInfosQueue.put(Calendar.getInstance().getTime());
 			//初始化操作
 			OpenApiClient.Init(AccessInfo.appId, RsaCryptoHelper.PKCSType.PKCS8, AccessInfo.serverPublicKey, AccessInfo.clientPrivateKey);
 			//请求url
@@ -237,5 +264,61 @@ public class BidUtil {
 			logger.error("获取投资扣费对账明细", e);
 		}
 		return null;
+	}
+	
+	public static Result overLimitFrequency(){
+		Result result = new Result();
+		result = new Result();
+		result.setSucess(false);
+		result.setContext("{msg:\"一分钟内访问次数超过限次频率，请稍后再试\"}");
+		result.setErrorMessage("一分钟内访问次数超过限次频率，请稍后再试");
+		return result;
+	}
+	
+	private static void checkValidReqTime() {
+		new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				while(true) {
+					Calendar c = Calendar.getInstance();
+					c.add(Calendar.SECOND, -60);
+					Date nowTime = c.getTime();
+					Date loanListfirstTime = loanListQueue.peek();
+					Date batchListingInfosfirstTime = batchListingInfosQueue.peek();
+					Date biddingfirstTime = biddingQueue.peek();
+					
+					if (null != loanListfirstTime) {
+						if (nowTime.getTime() > loanListfirstTime.getTime()) {
+							try {
+								loanListQueue.take();
+							} catch (InterruptedException e) { }
+						}
+					}
+					if (null != batchListingInfosfirstTime) {
+						if (nowTime.getTime() > batchListingInfosfirstTime.getTime()) {
+							try {
+								batchListingInfosQueue.take();
+							} catch (InterruptedException e) { }
+						}
+					}
+					if (null != biddingfirstTime) {
+						if (nowTime.getTime() > biddingfirstTime.getTime()) {
+							try {
+								biddingQueue.take();
+							} catch (InterruptedException e) { }
+						}
+					}
+					
+					try {
+						TimeUnit.MILLISECONDS.sleep(1);
+					} catch (InterruptedException e) { }
+				}				
+			}
+		}).start();
+	}
+	
+	static {
+		checkValidReqTime();
 	}
 }

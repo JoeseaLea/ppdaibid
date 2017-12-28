@@ -62,6 +62,7 @@ public class BatchListingInfosThread implements Runnable {
 			logger.error("获取BatchListingBidInfos结果异常：" + result.getContext());
 			return;
 		}
+		
 		logger.debug("batchListingBidInfos结果为：" + result.getContext());
 			
 		JSONObject jsoncontext = new JSONObject(context);
