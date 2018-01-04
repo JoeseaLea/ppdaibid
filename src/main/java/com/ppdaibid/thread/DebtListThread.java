@@ -122,13 +122,13 @@ public class DebtListThread extends Thread {
 		debtIds.removeAll(ignoreIds);
 		debtIds.removeAll(ignoreIdsMap.keySet());
 		
-		final List<Integer> fListIds = debtIds;
+		final List<Integer> fdebtIds = debtIds;
 		Thread thread = new Thread(new Runnable() {
 			@Override
 			public void run() {
 				Date date = Calendar.getInstance().getTime();
-				for (Integer listingId : fListIds) {
-					ignoreIdsMap.put(listingId, date);
+				for (Integer debtId : fdebtIds) {
+					ignoreIdsMap.put(debtId, date);
 				}
 
 			}
@@ -179,7 +179,7 @@ public class DebtListThread extends Thread {
 					
 					Set<Integer> keys = ignoreIdsMap.keySet();
 					Calendar calendar = Calendar.getInstance();
-					calendar.add(Calendar.SECOND, -10);
+					calendar.add(Calendar.SECOND, -30);
 					long currentTime = calendar.getTime().getTime();
 					for (Integer key : keys) {
 						if (ignoreIdsMap.get(key).getTime() < currentTime) {

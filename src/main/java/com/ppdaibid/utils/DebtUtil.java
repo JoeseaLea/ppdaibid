@@ -2,8 +2,11 @@ package com.ppdaibid.utils;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 
@@ -22,6 +25,12 @@ public class DebtUtil {
 	private static Logger logger = Logger.getLogger(DebtUtil.class);
 	
 	public static DateFormat dfMillisecond = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	
+	private static LinkedBlockingQueue<Date> debtListNewQueue = new LinkedBlockingQueue<Date>();
+	private static LinkedBlockingQueue<Date> batchDebtInfosQueue = new LinkedBlockingQueue<Date>();
+	
+	private static int debtListNewFrequency = 50;
+	private static int batchDebtInfosFrequency = 400;
 	
 	/**
 	 * 购买债权
@@ -49,7 +58,13 @@ public class DebtUtil {
 	 * @return result
 	 */
 	public static Result batchDebtInfos(List<Integer> debtIds) {
-		try{
+		
+		if (batchDebtInfosQueue.size() >= batchDebtInfosFrequency) {
+			return overLimitFrequency();
+		}
+		
+		try {
+			batchDebtInfosQueue.put(Calendar.getInstance().getTime());
 			//初始化操作
 			OpenApiClient.Init(AccessInfo.appId, RsaCryptoHelper.PKCSType.PKCS8, AccessInfo.serverPublicKey, AccessInfo.clientPrivateKey);
 			//请求url
@@ -71,7 +86,13 @@ public class DebtUtil {
 	 * @return result
 	 */
 	public static Result debtListNew(int pageIndex, Date startDateTime, String levels) {
+		
+		if (debtListNewQueue.size() > debtListNewFrequency) {
+			return overLimitFrequency();
+		}
+		
 		try {
+			debtListNewQueue.put(Calendar.getInstance().getTime());
 			//初始化操作
 			OpenApiClient.Init(AccessInfo.appId, RsaCryptoHelper.PKCSType.PKCS8, AccessInfo.serverPublicKey, AccessInfo.clientPrivateKey);
 			//请求url
@@ -85,5 +106,53 @@ public class DebtUtil {
 			logger.error("获取债权可购买列表异常", e);
 		}
 		return null;
+	}
+	
+	private static Result overLimitFrequency() {
+		Result result = new Result();
+		result = new Result();
+		result.setSucess(false);
+		result.setContext("{msg:\"一分钟内访问次数超过限次频率，请稍后再试\"}");
+		result.setErrorMessage("一分钟内访问次数超过限次频率，请稍后再试");
+		return result;
+	}
+
+	private static void checkValidReqTime() {
+		new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				while(true) {
+					Calendar c = Calendar.getInstance();
+					c.add(Calendar.SECOND, -60);
+					Date nowTime = c.getTime();
+					Date debtListNewfirstTime = debtListNewQueue.peek();
+					Date batchDebtInfosfirstTime = batchDebtInfosQueue.peek();
+					
+					if (null != debtListNewfirstTime) {
+						if (nowTime.getTime() > debtListNewfirstTime.getTime()) {
+							try {
+								debtListNewQueue.take();
+							} catch (InterruptedException e) { }
+						}
+					}
+					if (null != batchDebtInfosfirstTime) {
+						if (nowTime.getTime() > batchDebtInfosfirstTime.getTime()) {
+							try {
+								batchDebtInfosQueue.take();
+							} catch (InterruptedException e) { }
+						}
+					}
+					
+					try {
+						TimeUnit.MILLISECONDS.sleep(1);
+					} catch (InterruptedException e) { }
+				}
+			}
+		}).start();
+	}
+	
+	static {
+		checkValidReqTime();
 	}
 }

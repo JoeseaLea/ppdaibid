@@ -27,7 +27,7 @@ public class BatchDebtInfosThread extends Thread {
 	private static final Logger logger = Logger.getLogger(BatchDebtInfosThread.class);
 	private static final ExecutorService executorService = Executors.newCachedThreadPool();
 	
-	private static LinkedBlockingQueue<Date> blockingQueue = new LinkedBlockingQueue<Date>();
+//	private static LinkedBlockingQueue<Date> blockingQueue = new LinkedBlockingQueue<Date>();
 	private static int threadLength = 50;
 	private static BuyDebtThread[] buyDebtThreads = new BuyDebtThread[threadLength];
 
@@ -35,7 +35,7 @@ public class BatchDebtInfosThread extends Thread {
 	private Map<Integer, DebtInfo> debtInfosMap = null;
 	
 	//The count of batchListingInfos request can be request in one minute
-	private static int debtInfosCount = 400;
+//	private static int debtInfosCount = 400;
 	
 	public BatchDebtInfosThread(){
 		for (int i = 0; i < threadLength; i++) {
@@ -58,14 +58,14 @@ public class BatchDebtInfosThread extends Thread {
 		Result result = null;
 		List<Integer> listingIds = new ArrayList<Integer>();
 		
-		if (null == debtIds || 0 >= debtIds.size() || blockingQueue.size() > debtInfosCount || null == debtInfosMap || 0 >= debtInfosMap.size()) {
+		if (null == debtIds || 0 >= debtIds.size() || /*blockingQueue.size() > debtInfosCount || */null == debtInfosMap || 0 >= debtInfosMap.size()) {
 			return;
 		}
 		
 		Date batchTime = Calendar.getInstance().getTime();
-		try {
+		/*try {
 			blockingQueue.put(batchTime);
-		} catch (InterruptedException e) { }
+		} catch (InterruptedException e) { }*/
 		
 		result = DebtUtil.batchDebtInfos(debtIds);
 		
@@ -114,6 +114,7 @@ public class BatchDebtInfosThread extends Thread {
 		context = result.getContext();
 		if (context.contains("您的操作太频繁")) {
 			logger.error("LoanInfo请求太频繁，请求结果为：" + context);
+			DebtManager.debtListNeedWait = true;
 			AutoBidManager.loanListNeedWait = true;
 			return;
 		}
@@ -172,7 +173,7 @@ public class BatchDebtInfosThread extends Thread {
 		this.debtInfosMap = null;
 	}
 
-	private static void checkValidReqTime() {
+	/*private static void checkValidReqTime() {
 		new Thread(new Runnable() {
 			
 			@Override
@@ -196,9 +197,9 @@ public class BatchDebtInfosThread extends Thread {
 				}				
 			}
 		}).start();
-	}
+	}*/
 	
-	static {
+	/*static {
 		try {
 			debtInfosCount = Integer.parseInt(PropertiesUtil.getProperty("loanInfosCount", "500"));
 		} catch (Exception e) {
@@ -206,5 +207,5 @@ public class BatchDebtInfosThread extends Thread {
 			debtInfosCount = 500;
 		}
 		checkValidReqTime();
-	}
+	}*/
 }

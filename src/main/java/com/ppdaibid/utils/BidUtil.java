@@ -168,6 +168,7 @@ public class BidUtil {
 		if (batchListingInfosQueue.size() >= batchListingInfosFrequency) {
 			return overLimitFrequency();
 		}
+		
 		try {
 			batchListingInfosQueue.put(Calendar.getInstance().getTime());
 			//初始化操作
@@ -247,7 +248,9 @@ public class BidUtil {
 	}
 	
 	/**
-	 * 
+	 * 投资扣费对账明细
+	 * @param page 页码，从1开始
+	 * @param date 日期
 	 * @return
 	 */
 	public static Result volumeList(int page, Date date) {
@@ -313,7 +316,7 @@ public class BidUtil {
 					try {
 						TimeUnit.MILLISECONDS.sleep(1);
 					} catch (InterruptedException e) { }
-				}				
+				}
 			}
 		}).start();
 	}

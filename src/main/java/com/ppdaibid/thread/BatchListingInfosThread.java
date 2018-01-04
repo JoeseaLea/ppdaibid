@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
@@ -17,20 +15,19 @@ import com.ppdai.open.core.Result;
 import com.ppdaibid.AutoBidManager;
 import com.ppdaibid.info.LoanInfo;
 import com.ppdaibid.utils.BidUtil;
-import com.ppdaibid.utils.PropertiesUtil;
 
 public class BatchListingInfosThread implements Runnable {
 	
 	private static final Logger logger = Logger.getLogger(BatchListingInfosThread.class);
 	private static final ExecutorService executorService = Executors.newCachedThreadPool();
 	
-	private static LinkedBlockingQueue<Date> blockingQueue = new LinkedBlockingQueue<Date>();
+//	private static LinkedBlockingQueue<Date> blockingQueue = new LinkedBlockingQueue<Date>();
 
 	private List<Integer> listIds;
 	private Map<Integer, LoanInfo>loanInfosMap;
 	
 	//The count of batchListingInfos request can be request in one minute
-	private static int loanInfosCount = 500;
+//	private static int loanInfosCount = 500;
 	
 	public BatchListingInfosThread(List<Integer> listIds, Map<Integer, LoanInfo>loanInfosMap) {
 		this.listIds = listIds;
@@ -41,15 +38,15 @@ public class BatchListingInfosThread implements Runnable {
 	public void run() {
 		Result result = null;
 		
-		if (null == listIds || 0 >= listIds.size() || blockingQueue.size() > loanInfosCount) {
+		if (null == listIds || 0 >= listIds.size() /*|| blockingQueue.size() > loanInfosCount*/) {
 			return;
 		}
 		
 		result = BidUtil.batchListingInfos(listIds);
 		Date batchTime = Calendar.getInstance().getTime();
-		try {
+		/*try {
 			blockingQueue.put(batchTime);
-		} catch (InterruptedException e) { }
+		} catch (InterruptedException e) { }*/
 		
 		String context = result.getContext();
 		if (context.contains("您的操作太频繁")) {
@@ -91,7 +88,7 @@ public class BatchListingInfosThread implements Runnable {
 		this.loanInfosMap.clear();
 	}
 
-	private static void checkValidReqTime() {
+	/*private static void checkValidReqTime() {
 		new Thread(new Runnable() {
 			
 			@Override
@@ -115,9 +112,9 @@ public class BatchListingInfosThread implements Runnable {
 				}				
 			}
 		}).start();
-	}
+	}*/
 	
-	static {
+	/*static {
 		try {
 			loanInfosCount = Integer.parseInt(PropertiesUtil.getProperty("loanInfosCount", "500"));
 		} catch (Exception e) {
@@ -125,5 +122,5 @@ public class BatchListingInfosThread implements Runnable {
 			loanInfosCount = 500;
 		}
 		checkValidReqTime();
-	}
+	}*/
 }

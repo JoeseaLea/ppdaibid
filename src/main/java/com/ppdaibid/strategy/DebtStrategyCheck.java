@@ -52,7 +52,7 @@ public class DebtStrategyCheck {
 				&& debtInfo.getOverdueMoreCount() <=0 //逾期还清次数(＞15天)
 				&& debtInfo.getOwingAmount() <=8000 //当前待还金额
 				&& debtInfo.getLastSuccessBorrowTime().getTime() < c.getTime().getTime() //最后一次成功借款到现在≥3 个月
-				&& debtInfo.getTotalPrincipal() >= 500 //当前待还金额
+				&& debtInfo.getTotalPrincipal() >= 500 //累计借款金额
 				&& debtInfo.getOwingAmount()/debtInfo.getHighestDebt() >= 0.1//待还金额/最大负债
 				&& debtInfo.getOwingAmount()/debtInfo.getHighestDebt() <= 0.4//待还金额/最大负债
 				) {

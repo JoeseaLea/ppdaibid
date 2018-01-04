@@ -36,6 +36,8 @@ public class BuyDebtThread extends Thread {
 			return;
 		}
 		Result result = null;
+		
+		//TODO 符合策略购买
 		if (DebtStrategyCheck.checkStrategy1796(debtInfo)) {
 			result = DebtUtil.buyDebt(debtInfo.getDebtdealId());
 		}
