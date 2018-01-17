@@ -13,7 +13,7 @@ public class DebtManager {
 	private static final Logger logger = Logger.getLogger(DebtManager.class);
 	private static final ExecutorService executorService = Executors.newCachedThreadPool();
 	
-	// LoanList请求间隔时间
+	// DebtList请求间隔时间
 	public static long debtListIntervalTime = 1210;
 	public static boolean debtListNeedWait = false;
 	

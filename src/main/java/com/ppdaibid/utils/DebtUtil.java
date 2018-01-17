@@ -110,7 +110,6 @@ public class DebtUtil {
 	
 	private static Result overLimitFrequency() {
 		Result result = new Result();
-		result = new Result();
 		result.setSucess(false);
 		result.setContext("{msg:\"一分钟内访问次数超过限次频率，请稍后再试\"}");
 		result.setErrorMessage("一分钟内访问次数超过限次频率，请稍后再试");

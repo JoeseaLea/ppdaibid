@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
@@ -20,7 +18,6 @@ import com.ppdaibid.DebtManager;
 import com.ppdaibid.info.DebtInfo;
 import com.ppdaibid.utils.BidUtil;
 import com.ppdaibid.utils.DebtUtil;
-import com.ppdaibid.utils.PropertiesUtil;
 
 public class BatchDebtInfosThread extends Thread {
 	
