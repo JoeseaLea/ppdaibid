@@ -51,13 +51,17 @@ public class DebtManager {
 				DebtListThread debtListThread = new DebtListThread();
 				
 				while (true) {
-					if (debtListNeedWait) {
-						sleep(waitTime*60*1000);
-						debtListNeedWait = false;
+					try {
+						if (debtListNeedWait) {
+							sleep(waitTime*60*1000);
+							debtListNeedWait = false;
+						}
+						
+						executorService.execute(debtListThread);
+						sleep(debtListIntervalTime);
+					} catch (Exception e) {
+						logger.error("", e);
 					}
-					
-					executorService.execute(debtListThread);
-					sleep(debtListIntervalTime);
 				}
 			}
 		});

@@ -32,8 +32,8 @@ public class DebtListThread extends Thread {
 	private DebtDao debtDao = null;
 	
 	private static Map<Integer, Date> ignoreIdsMap = new ConcurrentHashMap<Integer, Date>();
-//	private static int threadLength = 50;
-//	private static BatchDebtInfosThread[] batchDebtInfosThreads = new BatchDebtInfosThread[threadLength];
+	private static int threadLength = 50;
+	private static BatchDebtInfosThread[] batchDebtInfosThreads = new BatchDebtInfosThread[threadLength];
 	
 	//页码
 	private static int pageIndex = 1;
@@ -66,9 +66,9 @@ public class DebtListThread extends Thread {
 			batchListingInfosSize = 10;
 		}
 		
-		/*for (int i = 0; i < threadLength; i++) {
+		for (int i = 0; i < threadLength; i++) {
 			batchDebtInfosThreads[i] = new BatchDebtInfosThread();
-		}*/
+		}
 	}
 
 	@Override
@@ -147,17 +147,23 @@ public class DebtListThread extends Thread {
 			debtInfosMapParam.put(debtId, debtInfosMap.get(debtId));
 			
 			if ((batchListingInfosSize <= debtIdsParam.size() || i >= length - 1) && 0 < debtIdsParam.size()) {
-				BatchDebtInfosThread batchDebtInfosThread = new BatchDebtInfosThread();
-				/*for (int j = 0; j < threadLength; j++) {
-					if (!batchDebtInfosThreads[j].isAlive()) {
-						batchDebtInfosThread = batchDebtInfosThreads[j];
+//				BatchDebtInfosThread batchDebtInfosThread = new BatchDebtInfosThread(debtIdsParam, debtInfosMapParam);
+				BatchDebtInfosThread batchDebtInfosThread = null;
+				
+				for (int k = 0; k < threadLength; k ++) {
+					if (!batchDebtInfosThreads[k].getStatus()) {
+						batchDebtInfosThread = batchDebtInfosThreads[k];
 						break;
 					}
-				}*/
-				if (null != batchDebtInfosThread) {
-					batchDebtInfosThread.init(debtIdsParam, debtInfosMapParam);
-					executorService.execute(batchDebtInfosThread);
 				}
+				
+				if (null == batchDebtInfosThread) {
+					batchDebtInfosThread = new BatchDebtInfosThread();
+				}
+				
+				batchDebtInfosThread.init(debtIdsParam, debtInfosMapParam);
+				
+				executorService.execute(batchDebtInfosThread);
 				debtIdsParam = new ArrayList<Integer>();
 				debtInfosMapParam = new ConcurrentHashMap<Integer, DebtInfo>();
 			}

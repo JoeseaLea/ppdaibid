@@ -21,31 +21,27 @@ import com.ppdaibid.utils.DebtUtil;
 
 public class BatchDebtInfosThread extends Thread {
 	
+	private boolean isAlive = false;
+	
 	private static final Logger logger = Logger.getLogger(BatchDebtInfosThread.class);
 	private static final ExecutorService executorService = Executors.newCachedThreadPool();
 	
-//	private static LinkedBlockingQueue<Date> blockingQueue = new LinkedBlockingQueue<Date>();
-	private static int threadLength = 50;
-	private static BuyDebtThread[] buyDebtThreads = new BuyDebtThread[threadLength];
-
 	private List<Integer> debtIds = null;
 	private Map<Integer, DebtInfo> debtInfosMap = null;
 	
-	//The count of batchListingInfos request can be request in one minute
-//	private static int debtInfosCount = 400;
+	private static int threadLength = 50;
+	private static BuyDebtThread[] buyDebtThreads = new BuyDebtThread[threadLength];
+	
 	
 	public BatchDebtInfosThread(){
-		for (int i = 0; i < threadLength; i++) {
-			buyDebtThreads[i] = new BuyDebtThread();
+		for (int i = 0; i < threadLength; i ++) {
+			buyDebtThreads[i] =  new BuyDebtThread();
 		}
 	}
 	
-	public BatchDebtInfosThread(List<Integer> debtIds, Map<Integer, DebtInfo> debtInfosMap) {
-		this.debtIds = debtIds;
-		this.debtInfosMap = debtInfosMap;
-	}
-	
 	public void init(List<Integer> debtIds, Map<Integer, DebtInfo> debtInfosMap){
+		this.isAlive = true;
+		
 		this.debtIds = debtIds;
 		this.debtInfosMap = debtInfosMap;
 	}
@@ -55,14 +51,12 @@ public class BatchDebtInfosThread extends Thread {
 		Result result = null;
 		List<Integer> listingIds = new ArrayList<Integer>();
 		
-		if (null == debtIds || 0 >= debtIds.size() || /*blockingQueue.size() > debtInfosCount || */null == debtInfosMap || 0 >= debtInfosMap.size()) {
+		if (null == debtIds || 0 >= debtIds.size() || null == debtInfosMap || 0 >= debtInfosMap.size()) {
+			this.isAlive = false;
 			return;
 		}
 		
 		Date batchTime = Calendar.getInstance().getTime();
-		/*try {
-			blockingQueue.put(batchTime);
-		} catch (InterruptedException e) { }*/
 		
 		result = DebtUtil.batchDebtInfos(debtIds);
 		
@@ -70,13 +64,18 @@ public class BatchDebtInfosThread extends Thread {
 		if (context.contains("您的操作太频繁")) {
 			logger.error("batchDebtInfos请求太频繁，请求结果为：" + context);
 			DebtManager.debtListNeedWait = true;
+			
+			this.isAlive = false;
 			return;
 		}
 		
 		if (!result.isSucess()) {
 			logger.error("获取batchDebtInfos结果异常：" + context);
+			
+			this.isAlive = false;
 			return;
 		}
+		
 		logger.debug("batchDebtInfos结果为：" + context);
 			
 		JSONObject jsoncontext = new JSONObject(context);
@@ -86,6 +85,8 @@ public class BatchDebtInfosThread extends Thread {
 		} catch (Exception e) {
 			logger.error("batchDebtInfos结果JSON解析错误：", e);
 			logger.error("JSON解析错误报文为：" + context);
+			
+			this.isAlive = false;
 			return;
 		}
 		
@@ -101,8 +102,8 @@ public class BatchDebtInfosThread extends Thread {
 			}
 			debtInfo.setDebtInfo(jsonDebtInfo);
 			
-			debtInfo.setInsertTime(batchTime);
-			debtInfo.setLastupdateTime(batchTime);
+//			debtInfo.setInsertTime(batchTime);
+//			debtInfo.setLastupdateTime(batchTime);
 			listingIds.add(debtInfo.getListingId());
 			debtInfosMap.put(debtId, debtInfo);
 		}
@@ -113,11 +114,15 @@ public class BatchDebtInfosThread extends Thread {
 			logger.error("LoanInfo请求太频繁，请求结果为：" + context);
 			DebtManager.debtListNeedWait = true;
 			AutoBidManager.loanListNeedWait = true;
+			
+			this.isAlive = false;
 			return;
 		}
 		
 		if (!result.isSucess()) {
 			logger.error("获取BatchListingBidInfos结果异常：" + result.getContext());
+			
+			this.isAlive = false;
 			return;
 		}
 		
@@ -130,6 +135,8 @@ public class BatchDebtInfosThread extends Thread {
 		} catch (Exception e) {
 			logger.error("batchListingBidInfos结果JSON解析错误：", e);
 			logger.error("JSON解析错误报文为：" + context);
+			
+			this.isAlive = false;
 			return;
 		}
 		
@@ -154,55 +161,27 @@ public class BatchDebtInfosThread extends Thread {
 			debtInfo.setLastupdateTime(batchTime);
 			
 			BuyDebtThread buyDebtThread = null;
-			for (int j = 0; j < threadLength; j++) {
-				if (!buyDebtThreads[j].isAlive()) {
-					buyDebtThread = buyDebtThreads[j];
+			for (int k = 0; k < threadLength; k ++) {
+				if (!buyDebtThreads[k].getStatus()) {
+					buyDebtThread = buyDebtThreads[k];
 					break;
 				}
 			}
-			if (null != buyDebtThread) {
-				buyDebtThread.init(debtInfo);
-				executorService.execute(buyDebtThread);
+			
+			if (null == buyDebtThread) {
+				buyDebtThread = new BuyDebtThread();
 			}
+			buyDebtThread.init(debtInfo);
+			executorService.execute(buyDebtThread);
 		}
 			
 		this.debtIds = null;
 		this.debtInfosMap = null;
+		
+		this.isAlive = false;
 	}
-
-	/*private static void checkValidReqTime() {
-		new Thread(new Runnable() {
-			
-			@Override
-			public void run() {
-				while(true) {
-					Calendar c = Calendar.getInstance();
-					c.add(Calendar.SECOND, -60);
-					Date nowTime = c.getTime();
-					Date firstTime = blockingQueue.peek();
-					
-					if (null == firstTime) {
-						continue;
-					}
-					
-					if (nowTime.getTime() > firstTime.getTime()) {
-						try {
-							blockingQueue.take();
-							TimeUnit.MILLISECONDS.sleep(1);
-						} catch (InterruptedException e) { }
-					}
-				}				
-			}
-		}).start();
-	}*/
 	
-	/*static {
-		try {
-			debtInfosCount = Integer.parseInt(PropertiesUtil.getProperty("loanInfosCount", "500"));
-		} catch (Exception e) {
-			logger.error("The count of batchListingInfos request can be request in one minute configurate error", e);
-			debtInfosCount = 500;
-		}
-		checkValidReqTime();
-	}*/
+	public boolean getStatus() {
+		return isAlive;
+	}
 }

@@ -50,6 +50,8 @@ public class BiddingThread implements Runnable {
 		}
 		
 		if (null == result) {
+			loanInfo.setBid(false);
+			bidDao.addLoanInfo(loanInfo);
 			return;
 		}
 		
@@ -57,6 +59,10 @@ public class BiddingThread implements Runnable {
 		if (context.contains("您的操作太频繁")) {
 			logger.error("Bidding请求太频繁，请求结果为：" + context);
 			AutoBidManager.loanListNeedWait = true;
+			
+			loanInfo.setBid(false);
+			bidDao.addLoanInfo(loanInfo);
+			
 			return;
 		}
 		
@@ -73,6 +79,7 @@ public class BiddingThread implements Runnable {
 				loanInfo.setBid(true);
 				logger.info("投标成功，投标结果：" + result.getContext());
 			} else {
+				loanInfo.setBid(false);
 				logger.info("投标未中，投标结果为：" + result.getContext());
 			}
 		}

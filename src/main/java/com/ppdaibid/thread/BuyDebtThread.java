@@ -17,8 +17,15 @@ public class BuyDebtThread extends Thread {
 	
 	private static final Logger logger = Logger.getLogger(BuyDebtThread.class);
 	
+	private boolean isAlive = false;
+	
 	private DebtInfo debtInfo = null;
 	private DebtDao debtDao = null;
+	
+	public void init(DebtInfo debtInfo) {
+		isAlive = true;
+		this.debtInfo = debtInfo;
+	}
 	
 	public BuyDebtThread() {
 		WebApplicationContext context = ContextLoader.getCurrentWebApplicationContext();
@@ -26,18 +33,16 @@ public class BuyDebtThread extends Thread {
 		this.debtDao = debtDaoImpl;
 	}
 	
-	public void init(DebtInfo debtInfo) {
-		this.debtInfo = debtInfo;
-	}
-	
 	@Override
 	public void run() {
 		if (null == debtInfo) {
+			
+			isAlive = false;
 			return;
 		}
 		Result result = null;
 		
-		//TODO 符合策略购买
+		//符合策略购买
 		if (DebtStrategyCheck.checkStrategy1648(debtInfo)
 				|| DebtStrategyCheck.checkStrategy1795(debtInfo)
 				|| DebtStrategyCheck.checkStrategy2156(debtInfo)
@@ -55,16 +60,21 @@ public class BuyDebtThread extends Thread {
 		}
 		
 		if (null == result) {
+			logger.info("债权(" + debtInfo.getDebtdealId() + ")不符合所有策略");
 			debtDao.addDebtInfo(debtInfo);
+			
+			isAlive = false;
 			return;
 		}
 		
 		String context = result.getContext();
 		if (context.contains("您的操作太频繁")) {
-			logger.error("Bidding请求太频繁，请求结果为：" + context);
+			logger.error("购买债权("+ debtInfo.getDebtdealId() + ")时，Bidding请求太频繁，请求结果为：" + context);
 			DebtManager.debtListNeedWait = true;
 			debtInfo.setBid(false);
 			debtDao.addDebtInfo(debtInfo);
+			
+			isAlive = false;
 			return;
 		}
 		
@@ -79,15 +89,22 @@ public class BuyDebtThread extends Thread {
 			}
 			if (0 == buyResult) {
 				debtInfo.setBid(true);
-				logger.info("购买债权成功，购买结果：" + result.getContext());
+				logger.info(debtInfo.getDebtdealId() + "购买债权成功，购买结果(ListingId:" + debtInfo.getListingId() + ")：" + result.getContext());
 			} else {
 				debtInfo.setBid(false);
-				logger.info("购买债权失败，购买结果为：" + result.getContext());
+				logger.info(debtInfo.getDebtdealId() + "购买债权失败，购买结果为(ListingId:" + debtInfo.getListingId() + ")：" + result.getContext());
 			}
+		} else {
+			debtInfo.setBid(false);
 		}
 		
 		debtDao.addDebtInfo(debtInfo);
 		
 		debtInfo = null;
+		isAlive = false;
+	}
+	
+	public boolean getStatus() {
+		return isAlive;
 	}
 }

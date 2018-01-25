@@ -54,13 +54,17 @@ public class AutoBidManager {
 				logger.info("Start to bid...");
 				Thread loanListThread = new Thread(new LoanListThread());
 				while (true) {
-					if (loanListNeedWait) {
-						sleep(waitTime*60*1000);
-						loanListNeedWait = false;
+					try {
+						if (loanListNeedWait) {
+							sleep(waitTime*60*1000);
+							loanListNeedWait = false;
+						}
+						
+						executorService.execute(loanListThread);
+						sleep(loanListIntervalTime);
+					} catch (Exception e) {
+						logger.error("", e);
 					}
-					
-					executorService.execute(loanListThread);
-					sleep(loanListIntervalTime);
 				}
 			}
 		});
