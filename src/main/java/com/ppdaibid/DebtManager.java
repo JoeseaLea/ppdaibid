@@ -6,12 +6,20 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 
+import com.ppdaibid.thread.BatchDebtInfosThread;
+import com.ppdaibid.thread.BuyDebtThread;
 import com.ppdaibid.thread.DebtListThread;
 import com.ppdaibid.utils.PropertiesUtil;
 
 public class DebtManager {
 	private static final Logger logger = Logger.getLogger(DebtManager.class);
-	private static final ExecutorService executorService = Executors.newCachedThreadPool();
+	
+	private static int batchDebtInfosThreadsLength = 20;
+	private static int buyDebtThreadsLength = 100;
+	public static final ExecutorService executorService = Executors.newCachedThreadPool();
+	public static final DebtListThread debtListThread = new DebtListThread();
+	public static final BatchDebtInfosThread[] batchDebtInfosThreads = new BatchDebtInfosThread[batchDebtInfosThreadsLength];
+	public static final BuyDebtThread[] buyDebtThreads = new BuyDebtThread[buyDebtThreadsLength];
 	
 	// DebtList请求间隔时间
 	public static long debtListIntervalTime = 1210;
@@ -21,6 +29,13 @@ public class DebtManager {
 	 * 开始购买债务
 	 */
 	public static void startDebtTask() {
+		
+		for (int i = 0; i < batchDebtInfosThreadsLength; i ++) {
+			batchDebtInfosThreads[i] =  new BatchDebtInfosThread();
+		}
+		for (int i = 0; i < buyDebtThreadsLength; i ++) {
+			buyDebtThreads[i] = new BuyDebtThread();
+		}
 		
 		try {
 			//从配置文件中读取LoanList请求间隔时间，如果未配置或者配置错误，则使用默认值
@@ -48,7 +63,6 @@ public class DebtManager {
 				}
 				
 				logger.info("Start to buy debt...");
-				DebtListThread debtListThread = new DebtListThread();
 				
 				while (true) {
 					try {
@@ -57,7 +71,7 @@ public class DebtManager {
 							debtListNeedWait = false;
 						}
 						
-						executorService.execute(debtListThread);
+						executorService.execute(DebtManager.debtListThread);
 						sleep(debtListIntervalTime);
 					} catch (Exception e) {
 						logger.error("", e);

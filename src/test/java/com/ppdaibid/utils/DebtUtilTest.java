@@ -7,6 +7,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.junit.Test;
 
 import com.ppdai.open.core.Result;
@@ -38,11 +40,14 @@ public class DebtUtilTest {
 		 * ,{"DebtdealId":43521446,"OwingNumber":5,"PriceforSaleRate":23.0000,"PriceforSale":134.2900,"ListingId":44106579,"CreditCode":"D"},{"DebtdealId":43521445,"OwingNumber":8,"PriceforSaleRate":23.0000,"PriceforSale":69.8300,"ListingId":60186505,"CreditCode":"D"},{"DebtdealId":43521444,"OwingNumber":8,"PriceforSaleRate":20.0000,"PriceforSale":139.5400,"ListingId":59896979,"CreditCode":"C"}],"Count":4,"Result":1,"ResultMessage":"","ResultCode":null}
 		 */
 		Calendar c = Calendar.getInstance();
-		c.add(Calendar.SECOND, -12);
+		c.add(Calendar.MONTH, -12);
 		Date startDateTime = c.getTime();
 		System.out.println(startDateTime);
 		Result result = DebtUtil.debtListNew(1, startDateTime, "A,B,C,D,E,F");
-		System.out.println(result.getContext());
+		String context = result.getContext();
+		JSONObject jsoncontext = new JSONObject(context);
+		JSONArray jsonDebtInfos = jsoncontext.getJSONArray("DebtInfos");
+		System.out.println(jsonDebtInfos.length());
 	}
 
 }

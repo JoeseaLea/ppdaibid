@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
@@ -27,13 +25,10 @@ import com.ppdaibid.utils.PropertiesUtil;
 
 public class DebtListThread extends Thread {
 	private static final Logger logger = Logger.getLogger(DebtListThread.class);
-	private static final ExecutorService executorService = Executors.newCachedThreadPool();
 	
 	private DebtDao debtDao = null;
 	
 	private static Map<Integer, Date> ignoreIdsMap = new ConcurrentHashMap<Integer, Date>();
-	private static int threadLength = 50;
-	private static BatchDebtInfosThread[] batchDebtInfosThreads = new BatchDebtInfosThread[threadLength];
 	
 	//页码
 	private static int pageIndex = 1;
@@ -66,9 +61,9 @@ public class DebtListThread extends Thread {
 			batchListingInfosSize = 10;
 		}
 		
-		for (int i = 0; i < threadLength; i++) {
+		/*for (int i = 0; i < threadLength; i++) {
 			batchDebtInfosThreads[i] = new BatchDebtInfosThread();
-		}
+		}*/
 	}
 
 	@Override
@@ -133,7 +128,7 @@ public class DebtListThread extends Thread {
 
 			}
 		});
-		executorService.execute(thread);
+		DebtManager.executorService.execute(thread);
 		
 		length = debtIds.size();
 		
@@ -147,12 +142,11 @@ public class DebtListThread extends Thread {
 			debtInfosMapParam.put(debtId, debtInfosMap.get(debtId));
 			
 			if ((batchListingInfosSize <= debtIdsParam.size() || i >= length - 1) && 0 < debtIdsParam.size()) {
-//				BatchDebtInfosThread batchDebtInfosThread = new BatchDebtInfosThread(debtIdsParam, debtInfosMapParam);
 				BatchDebtInfosThread batchDebtInfosThread = null;
 				
-				for (int k = 0; k < threadLength; k ++) {
-					if (!batchDebtInfosThreads[k].getStatus()) {
-						batchDebtInfosThread = batchDebtInfosThreads[k];
+				for (BatchDebtInfosThread b : DebtManager.batchDebtInfosThreads) {
+					if (!b.getStatus()) {
+						batchDebtInfosThread = b;
 						break;
 					}
 				}
@@ -163,7 +157,7 @@ public class DebtListThread extends Thread {
 				
 				batchDebtInfosThread.init(debtIdsParam, debtInfosMapParam);
 				
-				executorService.execute(batchDebtInfosThread);
+				DebtManager.executorService.execute(batchDebtInfosThread);
 				debtIdsParam = new ArrayList<Integer>();
 				debtInfosMapParam = new ConcurrentHashMap<Integer, DebtInfo>();
 			}
@@ -196,7 +190,7 @@ public class DebtListThread extends Thread {
 			}
 		});
 		
-		executorService.execute(thread);
+		DebtManager.executorService.execute(thread);
 	}
 	
 	static {

@@ -5,8 +5,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
@@ -24,20 +22,9 @@ public class BatchDebtInfosThread extends Thread {
 	private boolean isAlive = false;
 	
 	private static final Logger logger = Logger.getLogger(BatchDebtInfosThread.class);
-	private static final ExecutorService executorService = Executors.newCachedThreadPool();
 	
 	private List<Integer> debtIds = null;
 	private Map<Integer, DebtInfo> debtInfosMap = null;
-	
-	private static int threadLength = 50;
-	private static BuyDebtThread[] buyDebtThreads = new BuyDebtThread[threadLength];
-	
-	
-	public BatchDebtInfosThread(){
-		for (int i = 0; i < threadLength; i ++) {
-			buyDebtThreads[i] =  new BuyDebtThread();
-		}
-	}
 	
 	public void init(List<Integer> debtIds, Map<Integer, DebtInfo> debtInfosMap){
 		this.isAlive = true;
@@ -161,9 +148,10 @@ public class BatchDebtInfosThread extends Thread {
 			debtInfo.setLastupdateTime(batchTime);
 			
 			BuyDebtThread buyDebtThread = null;
-			for (int k = 0; k < threadLength; k ++) {
-				if (!buyDebtThreads[k].getStatus()) {
-					buyDebtThread = buyDebtThreads[k];
+			
+			for (BuyDebtThread b : DebtManager.buyDebtThreads) {
+				if (!b.getStatus()) {
+					buyDebtThread = b;
 					break;
 				}
 			}
@@ -172,7 +160,7 @@ public class BatchDebtInfosThread extends Thread {
 				buyDebtThread = new BuyDebtThread();
 			}
 			buyDebtThread.init(debtInfo);
-			executorService.execute(buyDebtThread);
+			DebtManager.executorService.execute(buyDebtThread);
 		}
 			
 		this.debtIds = null;
