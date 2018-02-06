@@ -151,8 +151,10 @@ public class DebtListThread extends Thread {
 					}
 				}
 				
+				// 没有空闲线程，返回等待空闲线程
 				if (null == batchDebtInfosThread) {
-					batchDebtInfosThread = new BatchDebtInfosThread();
+					return;
+//					batchDebtInfosThread = new BatchDebtInfosThread();
 				}
 				
 				batchDebtInfosThread.init(debtIdsParam, debtInfosMapParam);

@@ -60,7 +60,7 @@ public class BuyDebtThread extends Thread {
 		}
 		
 		if (null == result) {
-			logger.info("债权(" + debtInfo.getDebtdealId() + ")不符合所有策略");
+			logger.debug("债权(" + debtInfo.getDebtdealId() + ")不符合所有策略");
 			debtDao.addDebtInfo(debtInfo);
 			
 			isAlive = false;

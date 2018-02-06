@@ -156,8 +156,10 @@ public class BatchDebtInfosThread extends Thread {
 				}
 			}
 			
+			// 没有空闲线程，返回等待空闲线程
 			if (null == buyDebtThread) {
-				buyDebtThread = new BuyDebtThread();
+				return;
+//				buyDebtThread = new BuyDebtThread();
 			}
 			buyDebtThread.init(debtInfo);
 			DebtManager.executorService.execute(buyDebtThread);

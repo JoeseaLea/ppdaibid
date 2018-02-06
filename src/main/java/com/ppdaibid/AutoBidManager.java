@@ -6,13 +6,22 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 
+import com.ppdaibid.thread.BatchListingInfosThread;
+import com.ppdaibid.thread.BiddingThread;
 import com.ppdaibid.thread.LoanListThread;
 import com.ppdaibid.utils.PropertiesUtil;
 
 public class AutoBidManager {
 	private static final Logger logger = Logger.getLogger(AutoBidManager.class);
 	
+	private static int batchListingInfosThreadLength = 50;
+	private static int biddingThreadsLength = 200;
+	
 	public static final ExecutorService executorService = Executors.newCachedThreadPool();
+	public static final Runnable loanListThread = new LoanListThread();
+	public static final BatchListingInfosThread[] batchDebtInfosThreads = new BatchListingInfosThread[batchListingInfosThreadLength];
+	public static final BiddingThread[] buyDebtThreads = new BiddingThread[biddingThreadsLength];
+	
 	// LoanList请求间隔时间
 	public static long loanListIntervalTime = 110;
 	
@@ -52,7 +61,7 @@ public class AutoBidManager {
 				}
 				
 				logger.info("Start to bid...");
-				Thread loanListThread = new Thread(new LoanListThread());
+//				Thread loanListThread = new Thread(new LoanListThread());
 				while (true) {
 					try {
 						if (loanListNeedWait) {
