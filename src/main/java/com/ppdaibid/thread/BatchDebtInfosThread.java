@@ -19,9 +19,12 @@ import com.ppdaibid.utils.DebtUtil;
 
 public class BatchDebtInfosThread extends Thread {
 	
+	private static final Logger logger = Logger.getLogger(BatchDebtInfosThread.class);
+	
 	private boolean isAlive = false;
 	
-	private static final Logger logger = Logger.getLogger(BatchDebtInfosThread.class);
+	private Result batchDebtInfosResult = null;
+	private Result batchListingInfosResult = null;
 	
 	private List<Integer> debtIds = null;
 	private Map<Integer, DebtInfo> debtInfosMap = null;
@@ -35,7 +38,7 @@ public class BatchDebtInfosThread extends Thread {
 	
 	@Override
 	public void run() {
-		Result result = null;
+		
 		List<Integer> listingIds = new ArrayList<Integer>();
 		
 		if (null == debtIds || 0 >= debtIds.size() || null == debtInfosMap || 0 >= debtInfosMap.size()) {
@@ -43,11 +46,43 @@ public class BatchDebtInfosThread extends Thread {
 			return;
 		}
 		
+		for (Integer debtId : debtIds) {
+			listingIds.add(debtInfosMap.get(debtId).getListingId());
+		}
+		
 		Date batchTime = Calendar.getInstance().getTime();
+		Thread batchDebtInfosThread = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				batchDebtInfosResult = DebtUtil.batchDebtInfos(debtIds);
+			}
+		});
 		
-		result = DebtUtil.batchDebtInfos(debtIds);
+		Thread batchListingInfosThread = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				batchListingInfosResult = BidUtil.batchListingInfos(listingIds);
+			}
+		});
 		
-		String context = result.getContext();
+		batchDebtInfosThread.start();
+		batchListingInfosThread.start();
+		
+		try {
+			batchDebtInfosThread.join();
+			batchListingInfosThread.join();
+		} catch (InterruptedException e1) { }
+		
+		if (null == batchDebtInfosResult) {
+			this.isAlive = false;
+			return;
+		}
+		if (null == batchListingInfosResult) {
+			this.isAlive = false;
+			return;
+		}
+		
+		String context = batchDebtInfosResult.getContext();
 		if (context.contains("您的操作太频繁")) {
 			logger.error("batchDebtInfos请求太频繁，请求结果为：" + context);
 			DebtManager.debtListNeedWait = true;
@@ -56,7 +91,7 @@ public class BatchDebtInfosThread extends Thread {
 			return;
 		}
 		
-		if (!result.isSucess()) {
+		if (!batchDebtInfosResult.isSucess()) {
 			logger.error("获取batchDebtInfos结果异常：" + context);
 			
 			this.isAlive = false;
@@ -89,14 +124,10 @@ public class BatchDebtInfosThread extends Thread {
 			}
 			debtInfo.setDebtInfo(jsonDebtInfo);
 			
-//			debtInfo.setInsertTime(batchTime);
-//			debtInfo.setLastupdateTime(batchTime);
-			listingIds.add(debtInfo.getListingId());
 			debtInfosMap.put(debtId, debtInfo);
 		}
-		
-		result = BidUtil.batchListingInfos(listingIds);
-		context = result.getContext();
+		batchListingInfosResult = BidUtil.batchListingInfos(listingIds);
+		context = batchListingInfosResult.getContext();
 		if (context.contains("您的操作太频繁")) {
 			logger.error("LoanInfo请求太频繁，请求结果为：" + context);
 			DebtManager.debtListNeedWait = true;
@@ -106,14 +137,14 @@ public class BatchDebtInfosThread extends Thread {
 			return;
 		}
 		
-		if (!result.isSucess()) {
-			logger.error("获取BatchListingBidInfos结果异常：" + result.getContext());
+		if (!batchListingInfosResult.isSucess()) {
+			logger.error("获取BatchListingBidInfos结果异常：" + batchListingInfosResult.getContext());
 			
 			this.isAlive = false;
 			return;
 		}
 		
-		logger.debug("batchListingBidInfos结果为：" + result.getContext());
+		logger.debug("batchListingBidInfos结果为：" + batchListingInfosResult.getContext());
 		
 		jsoncontext = new JSONObject(context);
 		JSONArray jsonLoanInfos = null;
@@ -158,6 +189,7 @@ public class BatchDebtInfosThread extends Thread {
 			
 			// 没有空闲线程，返回等待空闲线程
 			if (null == buyDebtThread) {
+				this.isAlive = false;
 				return;
 //				buyDebtThread = new BuyDebtThread();
 			}

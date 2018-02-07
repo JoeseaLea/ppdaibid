@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+
+<script type="text/javascript" src="js/jquery-3.2.1.js" ></script>
+
+<body>
+	<div>
+		<table>
+			<tr>
+				<td align="right">拍拍贷绑定手机号：</td>
+				<td><span>186***1559</span><button id="" onclick="ppdai.sendSMSAuthCode()">获取短信验证码</button></td>
+			</tr>
+			<tr>
+				<td align="right">短信验证码：</td>
+				<td><input id="smsAuthCode" name="smsAuthCode" type="text" placeholder="请输入短信验证码"></td>
+			</tr>
+			<tr>
+				<td colspan="2" align="right"><button id="" onclick="ppdai.smsauthcodelogin()">登录</button></td>
+			</tr>
+		</table>
+	</div>
+	
+	<div>
+		<div>
+			<div>
+				<span>登录成功，是否开启自动投标功能</span>
+				<button onclick="ppdai.startAutoBid(1)">开启</button>
+				<button onclick="ppdai.startAutoBid(0)">不开启</button>
+			</div>
+		</div>
+	</div>
+</body>
+
+<script type="text/javascript">
+	var ppdai = {
+			sendSMSAuthCode: function () {
+				$.post("sendSMSAuthCode", function(data){
+					data = JSON.parse(data);
+					if(0 == data.ResultCode) {
+						alert("验证码已发送，请注意查收！");
+					}
+				});
+			},
+			
+			smsauthcodelogin: function () {
+				$.post("smsauthcodelogin", {"smsAuthCode": $("#smsAuthCode").val()}, function(data) {
+					if ("SUCCESS" == data) {
+						alert("登录成功！");
+					}
+				});
+			},
+			
+			startAutoBid: function (v) {
+				$.post("startAutoBid", {"auto":v}, function(data) {
+					if ("SUCCESS" == data) {
+						alert("已开启自动投标功能。");
+					}
+				});
+			}
+	}
+</script>
+</html>

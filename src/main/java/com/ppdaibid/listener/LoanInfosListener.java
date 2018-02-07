@@ -24,7 +24,7 @@ public class LoanInfosListener implements ServletContextListener {
      */
     public void contextInitialized(ServletContextEvent sce)  {
 //    		AutoBidManager.startLoanInfos();
-//    		DebtManager.startDebtTask();
+    		DebtManager.startDebtTask();
     }
 	
 }

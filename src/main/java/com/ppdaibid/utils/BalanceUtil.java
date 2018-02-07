@@ -10,7 +10,7 @@ import com.ppdaibid.AccessInfo;
 
 public class BalanceUtil {
 	
-	private static Logger logger = Logger.getLogger(BalanceUtil.class);
+	private static final Logger logger = Logger.getLogger(BalanceUtil.class);
 	
 	public static DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 

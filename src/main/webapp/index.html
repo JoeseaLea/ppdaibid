@@ -6,42 +6,49 @@
 </head>
 
 <script type="text/javascript" src="js/jquery-3.2.1.js" ></script>
-
+<link href="./css/style.css" rel="stylesheet">
 <body>
-	<div>
-		<table>
-			<tr>
-				<td align="right">拍拍贷绑定手机号：</td>
-				<td><span>186***1559</span><button id="" onclick="ppdai.sendSMSAuthCode()">获取短信验证码</button></td>
-			</tr>
-			<tr>
-				<td align="right">短信验证码：</td>
-				<td><input id="smsAuthCode" name="smsAuthCode" type="text" placeholder="请输入短信验证码"></td>
-			</tr>
-			<tr>
-				<td colspan="2" align="right"><button id="" onclick="ppdai.smsauthcodelogin()">登录</button></td>
-			</tr>
-		</table>
-	</div>
-	
-	<div>
-		<div>
-			<div>
-				<span>登录成功，是否开启自动投标功能</span>
-				<button onclick="ppdai.startAutoBid(1)">开启</button>
-				<button onclick="ppdai.startAutoBid(0)">不开启</button>
-			</div>
+	<div class="main_div">
+		<div align="center">
+			<table style="margin-top: 50px;">
+				<tr>
+					<td align="right">拍拍贷绑定手机号：</td>
+					<td><span id="mobile_number">186***1559</span><button id="" onclick="ppdai.sendSMSAuthCode()" style="margin-left: 10px;">获取短信验证码</button></td>
+				</tr>
+				<tr>
+					<td align="right">短信验证码：</td>
+					<td><input id="smsAuthCode" name="smsAuthCode" type="text" placeholder="请输入登录动态密码"></td>
+				</tr>
+				<tr>
+					<td colspan="2" align="right"><button id="" onclick="ppdai.smsauthcodelogin()" style="margin-right: 10px; width: 50px;">登录</button>
+					<button id="" onclick="ppdai.smsauthcodelogin()" style="width: 50px;">取消</button></td>
+				</tr>
+			</table>
+		</div>
+		
+		<div style="margin-top: 50px; display: none;">
+			<button onclick="ppdai.showAccessInfo()">查看授权信息</button>
+			<button onclick="ppdai.showBalanceInfo()" style="margin-left: 20px;">查看资金余额</button>
+			<p>
+				<span id="information"></span>
+			</p>
 		</div>
 	</div>
 </body>
 
 <script type="text/javascript">
 	var ppdai = {
+			getMobileNumber: function () {
+				$.post("getMobileNumber", function(data){
+					$("#mobile_number").text(data);
+				});
+			},
+			
 			sendSMSAuthCode: function () {
 				$.post("sendSMSAuthCode", function(data){
 					data = JSON.parse(data);
 					if(0 == data.ResultCode) {
-						alert("验证码已发送，请注意查收！");
+						alert("验证码已发送，30分钟内有效！");
 					}
 				});
 			},
@@ -60,7 +67,21 @@
 						alert("已开启自动投标功能。");
 					}
 				});
+			},
+			
+			showAccessInfo: function () {
+				$.post("getAccessInfo", function(data) {
+					$("#information").html(data);
+				});
+			},
+			
+			showBalanceInfo: function () {
+				$.post("getBalanceInfo", function(data) {
+					$("#information").html(data);
+				},"text");
 			}
 	}
+	
+	ppdai.getMobileNumber();
 </script>
 </html>

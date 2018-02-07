@@ -1,1 +1,14 @@
-@charset "UTF-8";
+.main_div {
+	display: inline-block;
+	width: 100%;
+}
+td {
+	height:38px;
+}
+button {
+	height: 32px;
+}
+input {
+	height: 22px;
+    width: 202px;
+}
