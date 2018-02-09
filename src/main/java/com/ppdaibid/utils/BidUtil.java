@@ -54,7 +54,7 @@ public class BidUtil {
 			OpenApiClient.Init(AccessInfo.appId, RsaCryptoHelper.PKCSType.PKCS8, AccessInfo.serverPublicKey, AccessInfo.clientPrivateKey);
 			String accessToken = AccessInfo.accessToken;
 			//请求url
-			String url = "http://gw.open.ppdai.com/invest/BidService/Bidding";
+			String url = "https://openapi.ppdai.com/invest/BidService/Bidding";
 			Result result = OpenApiClient.send(url, accessToken,
 					new PropertyObject("ListingId", listingId, ValueTypeEnum.Int32),
 					new PropertyObject("Amount",amount, ValueTypeEnum.Double),
@@ -81,7 +81,7 @@ public class BidUtil {
 			OpenApiClient.Init(AccessInfo.appId, RsaCryptoHelper.PKCSType.PKCS8, AccessInfo.serverPublicKey, AccessInfo.clientPrivateKey);
 //			String accessToken = AccessInfo.accessToken;
 			//请求url
-			String url = "http://gw.open.ppdai.com/invest/BidService/BidList";
+			String url = "https://openapi.ppdai.com/invest/BidService/BidList";
 			Result result = null;
 			if (-1 == listingId) {
 				result = OpenApiClient.send(url, AccessInfo.accessToken,
@@ -115,7 +115,7 @@ public class BidUtil {
 			//初始化操作
 			OpenApiClient.Init(AccessInfo.appId, RsaCryptoHelper.PKCSType.PKCS8, AccessInfo.serverPublicKey, AccessInfo.clientPrivateKey);
 			//请求url
-			String url = "http://gw.open.ppdai.com/invest/BidService/BatchLenderBidList";
+			String url = "https://openapi.ppdai.com/invest/BidService/BatchLenderBidList";
 			
 			if (null == AccessInfo.accessToken) {
 				throw new InterruptedException("accessToken is null");
@@ -148,7 +148,7 @@ public class BidUtil {
 			// 初始化操作
 			OpenApiClient.Init(AccessInfo.appId, RsaCryptoHelper.PKCSType.PKCS8, AccessInfo.serverPublicKey, AccessInfo.clientPrivateKey);
 			// 请求url
-			String url = "http://gw.open.ppdai.com/invest/LLoanInfoService/LoanList";
+			String url = "https://openapi.ppdai.com/invest/LLoanInfoService/LoanList";
 			result = OpenApiClient.send(url, new PropertyObject("PageIndex", pageIndex, ValueTypeEnum.Int32),
 					new PropertyObject("StartDateTime", dfMillisecond.format(startDateTime), ValueTypeEnum.DateTime));
 			return result;
@@ -174,7 +174,7 @@ public class BidUtil {
 			//初始化操作
 			OpenApiClient.Init(AccessInfo.appId, RsaCryptoHelper.PKCSType.PKCS8, AccessInfo.serverPublicKey, AccessInfo.clientPrivateKey);
 			//请求url
-			String url = "http://gw.open.ppdai.com/invest/LLoanInfoService/BatchListingInfos";
+			String url = "https://openapi.ppdai.com/invest/LLoanInfoService/BatchListingInfos";
 			Result result = OpenApiClient.send(url,
 					new PropertyObject("ListingIds", listIds, ValueTypeEnum.Other));
 			return result;
@@ -194,7 +194,7 @@ public class BidUtil {
 			//初始化操作
 			OpenApiClient.Init(AccessInfo.appId, RsaCryptoHelper.PKCSType.PKCS8, AccessInfo.serverPublicKey, AccessInfo.clientPrivateKey);
 			//请求url
-			String url = "http://gw.open.ppdai.com/invest/LLoanInfoService/BatchListingBidInfos";
+			String url = "https://openapi.ppdai.com/invest/LLoanInfoService/BatchListingBidInfos";
 			Result result = OpenApiClient.send(url,
 					new PropertyObject("ListingIds", listIds, ValueTypeEnum.Other));
 			return result;
@@ -214,7 +214,7 @@ public class BidUtil {
 			//初始化操作
 			OpenApiClient.Init(AccessInfo.appId, RsaCryptoHelper.PKCSType.PKCS8, AccessInfo.serverPublicKey, AccessInfo.clientPrivateKey);
 			//请求url
-			String url = "http://gw.open.ppdai.com/invest/LLoanInfoService/BatchListingStatusInfos";
+			String url = "https://openapi.ppdai.com/invest/LLoanInfoService/BatchListingStatusInfos";
 			Result result = OpenApiClient.send(url,
 					new PropertyObject("ListingIds", listIds, ValueTypeEnum.Other));
 			return result;
@@ -235,7 +235,7 @@ public class BidUtil {
 			//初始化操作
 			OpenApiClient.Init(AccessInfo.appId, RsaCryptoHelper.PKCSType.PKCS8, AccessInfo.serverPublicKey, AccessInfo.clientPrivateKey);
 			//请求url
-			String url = "http://gw.open.ppdai.com/invest/RepaymentService/FetchLenderRepayment";
+			String url = "https://openapi.ppdai.com/invest/RepaymentService/FetchLenderRepayment";
 			Result result = OpenApiClient.send(url, AccessInfo.accessToken,
 					new PropertyObject("ListingId", listingId, ValueTypeEnum.Int32),
 					new PropertyObject("OrderId", orderId, ValueTypeEnum.String));
@@ -258,7 +258,7 @@ public class BidUtil {
 			//初始化操作
 			OpenApiClient.Init(AccessInfo.appId, RsaCryptoHelper.PKCSType.PKCS8, AccessInfo.serverPublicKey, AccessInfo.clientPrivateKey);
 			 //请求url
-			String url = "http://gw.open.ppdai.com/charge/volume/list";
+			String url = "https://openapi.ppdai.com/charge/volume/list";
 			PropertyObject propertyObjects[] = {new PropertyObject("page", page, ValueTypeEnum.Int32),
 					new PropertyObject("date",dfDay.format(date), ValueTypeEnum.DateTime)};
 			Result result = OpenApiClient.send(url, propertyObjects);

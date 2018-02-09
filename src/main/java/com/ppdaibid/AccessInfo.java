@@ -1,7 +1,5 @@
 package com.ppdaibid;
 
-import java.util.UUID;
-
 import com.ppdaibid.utils.PropertiesUtil;
 
 public class AccessInfo {
@@ -26,26 +24,26 @@ public class AccessInfo {
 	/**
 	 * 设备指纹，对应设备的唯一标识
 	 */
-	public static String deviceFP = UUID.randomUUID().toString().replaceAll("-", "");
+	public static String deviceFP = "b5b8007a5eaa434daa7ec7f6857c5f61";
 //	public static final String deviceFP = "e3c43d2d77724d4c93da9f91bc2ead79";
 	/**
 	 * 用户在第三方平台上的唯一标识
 	 */
-	public static String openID = null;
+	public static String openID = "fbb020313ab74092820c5b8a0a1ea3cd";
 //	public static String openID = "706762e882f94c809fa588bb262e330f";
 	/**
 	 * 用户给第三方平台的授权访问令牌,有效期7天
 	 */
-	public static String accessToken = null;
+	public static String accessToken = "28301af1-1dd5-44de-96f1-50b02344b862";
 //	public static final String accessToken = "6e83bdf3-11ba-4420-a6ff-87fbf3c87dc0";
 	/**
 	 * 用户给第三方授权使用刷新令牌,有效期90天
 	 */
-	public static String refreshToken = null;
+	public static String refreshToken = "f3d205ac-00c9-4cea-8685-c010870457f0";
 //	public static String refreshToken = "a21b0472-41bd-4805-b3cc-ec4f792e60bf";
 	/**
 	 * 用户给第三方授权访问令牌超时时间，单位s
 	 */
-	public static int expiresIn = 0;
+	public static int expiresIn = 604800;
 //	public static int expiresIn = 604799;
 }

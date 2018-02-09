@@ -30,7 +30,7 @@ public class AccountUtil {
 
 	public static Result sendsmsauthcode() {
 		try {
-			String url = "http://gw.open.ppdai.com/auth/authservice/sendsmsauthcode";
+			String url = "https://openapi.ppdai.com/auth/authservice/sendsmsauthcode";
 		    //初始化（执行一次即可）
 		    OpenApiClient.Init(AccessInfo.appId, RsaCryptoHelper.PKCSType.PKCS8, AccessInfo.serverPublicKey, AccessInfo.clientPrivateKey);
 		    Result result = OpenApiClient.send(url
@@ -48,7 +48,7 @@ public class AccountUtil {
 			 //初始化操作
 			OpenApiClient.Init(AccessInfo.appId, RsaCryptoHelper.PKCSType.PKCS8, AccessInfo.serverPublicKey, AccessInfo.clientPrivateKey);
 			//请求url
-			String url = "http://gw.open.ppdai.com/open/oauthservice/smsauthcodelogin";
+			String url = "https://openapi.ppdai.com/open/oauthservice/smsauthcodelogin";
 			Result result = OpenApiClient.send(url
 					, new PropertyObject("Mobile", AccessInfo.mobile, ValueTypeEnum.String)
 					, new PropertyObject("DeviceFP", AccessInfo.deviceFP, ValueTypeEnum.String)

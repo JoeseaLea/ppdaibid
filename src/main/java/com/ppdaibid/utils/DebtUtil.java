@@ -42,7 +42,7 @@ public class DebtUtil {
 			//初始化操作
 			OpenApiClient.Init(AccessInfo.appId, RsaCryptoHelper.PKCSType.PKCS8, AccessInfo.serverPublicKey, AccessInfo.clientPrivateKey);
 			//请求url
-			String url = "http://gw.open.ppdai.com/invest/BidService/BuyDebt";
+			String url = "https://openapi.ppdai.com/invest/BidService/BuyDebt";
 			Result result = OpenApiClient.send(url, AccessInfo.accessToken,
 					new PropertyObject("debtDealId", debtDealId, ValueTypeEnum.Int32));
 			return result;
@@ -68,7 +68,7 @@ public class DebtUtil {
 			//初始化操作
 			OpenApiClient.Init(AccessInfo.appId, RsaCryptoHelper.PKCSType.PKCS8, AccessInfo.serverPublicKey, AccessInfo.clientPrivateKey);
 			//请求url
-			String url = "http://gw.open.ppdai.com/invest/LLoanInfoService/BatchDebtInfos";
+			String url = "https://openapi.ppdai.com/invest/LLoanInfoService/BatchDebtInfos";
 			Result result = OpenApiClient.send(url,
 					new PropertyObject("DebtIds", debtIds, ValueTypeEnum.Other));
 			return result;
@@ -96,7 +96,7 @@ public class DebtUtil {
 			//初始化操作
 			OpenApiClient.Init(AccessInfo.appId, RsaCryptoHelper.PKCSType.PKCS8, AccessInfo.serverPublicKey, AccessInfo.clientPrivateKey);
 			//请求url
-			String url = "http://gw.open.ppdai.com/invest/LLoanInfoService/DebtListNew";
+			String url = "https://openapi.ppdai.com/invest/LLoanInfoService/DebtListNew";
 			Result result = OpenApiClient.send(url,
 			        new PropertyObject("PageIndex", pageIndex, ValueTypeEnum.Int32),
 			        new PropertyObject("StartDateTime", dfMillisecond.format(startDateTime), ValueTypeEnum.DateTime),

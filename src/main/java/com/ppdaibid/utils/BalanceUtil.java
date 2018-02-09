@@ -19,7 +19,7 @@ public class BalanceUtil {
 		try {
 			OpenApiClient.Init(AccessInfo.appId, RsaCryptoHelper.PKCSType.PKCS8, AccessInfo.serverPublicKey, AccessInfo.clientPrivateKey);
 			//请求url
-			String url = "http://gw.open.ppdai.com/balance/balanceService/QueryBalance";
+			String url = "https://openapi.ppdai.com/balance/balanceService/QueryBalance";
 			
 			if (null == AccessInfo.accessToken) {
 				throw new InterruptedException("accessToken is null");

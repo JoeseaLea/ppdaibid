@@ -11,5 +11,4 @@ public class BalanceUtilTest {
 		Result result = BalanceUtil.queryBalance();
 		System.out.println(result.getContext());
 	}
-
 }
