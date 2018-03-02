@@ -33,7 +33,8 @@ public class DebtListThread extends Thread {
 	//页码
 	private static int pageIndex = 1;
 	//一次batchListingInfos请求最大允许的ListingIds数量
-	private static int batchListingInfosSize = 10;
+	private static int batchDebtInfosSize = 10;
+	private static int pageListFirstSize = 50;
 	private static int validTime = -12;
 	
 	public DebtListThread() {
@@ -41,11 +42,12 @@ public class DebtListThread extends Thread {
 	}
 
 	public DebtListThread(int pageIndex_) {
+		pageIndex = pageIndex_;
+		
 		WebApplicationContext context = ContextLoader.getCurrentWebApplicationContext();
 		DebtDaoImpl debtDaoImpl = context.getBean("debtDao", DebtDaoImpl.class);
 		this.debtDao = debtDaoImpl;
 		
-		pageIndex = pageIndex_;
 		try {
 			validTime = 0 - Integer.parseInt(PropertiesUtil.getProperty("validTime", "12"));
 		} catch (Exception e) {
@@ -54,16 +56,20 @@ public class DebtListThread extends Thread {
 		}
 		
 		try {
-			//从配置文件中读取一次batchListingInfos请求最大允许的ListingIds数量，如果未配置或者配置错误，则使用默认值
-			batchListingInfosSize = Integer.parseInt(PropertiesUtil.getProperty("batchListingInfosSize", "10"));
+			//从配置文件中读取一次batchDebtInfos请求最大允许的DebtIds数量，如果未配置或者配置错误，则使用默认值
+			batchDebtInfosSize = Integer.parseInt(PropertiesUtil.getProperty("batchDebtInfosSize", "10"));
 		} catch (Exception e) {
-			logger.error("ListingIds parameter's size of one batchListingInfos request configurate error", e);
-			batchListingInfosSize = 10;
+			logger.error("batchDebtInfosSize configurate error", e);
+			batchDebtInfosSize = 10;
 		}
 		
-		/*for (int i = 0; i < threadLength; i++) {
-			batchDebtInfosThreads[i] = new BatchDebtInfosThread();
-		}*/
+		try {
+			//每页前pageListFirstSize条数据作为有效数据
+			pageListFirstSize = Integer.parseInt(PropertiesUtil.getProperty("pageListFirstSize", "50"));
+		} catch (Exception e) {
+			logger.error("ListingIds parameter's size of one batchListingInfos request configurate error", e);
+			pageListFirstSize = 50;
+		}
 	}
 
 	@Override
@@ -104,7 +110,7 @@ public class DebtListThread extends Thread {
 		
 		int length = jsonDebtInfos.length();
 		
-		for (int i = 0; i < length; i++) {
+		for (int i = 0; i < length  && i < pageListFirstSize; i++) {
 			JSONObject jsonDebtInfo = (JSONObject) jsonDebtInfos.get(i);
 			int debtdealId = jsonDebtInfo.getInt("DebtdealId");
 			DebtInfo debtInfo = new DebtInfo();
@@ -141,7 +147,7 @@ public class DebtListThread extends Thread {
 			debtIdsParam.add(debtId);
 			debtInfosMapParam.put(debtId, debtInfosMap.get(debtId));
 			
-			if ((batchListingInfosSize <= debtIdsParam.size() || i >= length - 1) && 0 < debtIdsParam.size()) {
+			if ((batchDebtInfosSize <= debtIdsParam.size() || i >= length - 1) && 0 < debtIdsParam.size()) {
 				BatchDebtInfosThread batchDebtInfosThread = null;
 				
 				for (BatchDebtInfosThread b : DebtManager.batchDebtInfosThreads) {
@@ -154,7 +160,6 @@ public class DebtListThread extends Thread {
 				// 没有空闲线程，返回等待空闲线程
 				if (null == batchDebtInfosThread) {
 					return;
-//					batchDebtInfosThread = new BatchDebtInfosThread();
 				}
 				
 				batchDebtInfosThread.init(debtIdsParam, debtInfosMapParam);

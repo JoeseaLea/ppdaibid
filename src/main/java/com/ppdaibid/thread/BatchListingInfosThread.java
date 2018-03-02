@@ -4,8 +4,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
@@ -19,17 +17,15 @@ import com.ppdaibid.utils.BidUtil;
 public class BatchListingInfosThread implements Runnable {
 	
 	private static final Logger logger = Logger.getLogger(BatchListingInfosThread.class);
-	private static final ExecutorService executorService = Executors.newCachedThreadPool();
 	
-//	private static LinkedBlockingQueue<Date> blockingQueue = new LinkedBlockingQueue<Date>();
-
+	private boolean isAlive = false;
+	
 	private List<Integer> listIds;
 	private Map<Integer, LoanInfo>loanInfosMap;
 	
-	//The count of batchListingInfos request can be request in one minute
-//	private static int loanInfosCount = 500;
-	
-	public BatchListingInfosThread(List<Integer> listIds, Map<Integer, LoanInfo>loanInfosMap) {
+	public void init(List<Integer> listIds, Map<Integer, LoanInfo>loanInfosMap) {
+		this.isAlive = true;
+		
 		this.listIds = listIds;
 		this.loanInfosMap = loanInfosMap;
 	}
@@ -38,25 +34,27 @@ public class BatchListingInfosThread implements Runnable {
 	public void run() {
 		Result result = null;
 		
-		if (null == listIds || 0 >= listIds.size() /*|| blockingQueue.size() > loanInfosCount*/) {
+		if (null == listIds || 0 >= listIds.size() || null == loanInfosMap || 0 >= loanInfosMap.size()) {
+			isAlive = false;
 			return;
 		}
 		
 		result = BidUtil.batchListingInfos(listIds);
 		Date batchTime = Calendar.getInstance().getTime();
-		/*try {
-			blockingQueue.put(batchTime);
-		} catch (InterruptedException e) { }*/
 		
 		String context = result.getContext();
 		if (context.contains("您的操作太频繁")) {
 			logger.error("LoanInfo请求太频繁，请求结果为：" + context);
 			AutoBidManager.loanListNeedWait = true;
+			
+			isAlive = false;
 			return;
 		}
 		
 		if (!result.isSucess()) {
 			logger.error("获取BatchListingBidInfos结果异常：" + result.getContext());
+			
+			isAlive = false;
 			return;
 		}
 		
@@ -69,6 +67,8 @@ public class BatchListingInfosThread implements Runnable {
 		} catch (Exception e) {
 			logger.error("batchListingBidInfos结果JSON解析错误：", e);
 			logger.error("JSON解析错误报文为：" + context);
+			
+			isAlive = false;
 			return;
 		}
 		
@@ -81,11 +81,32 @@ public class BatchListingInfosThread implements Runnable {
 			loanInfo.setInsertTime(batchTime);
 			loanInfo.setLastupdateTime(batchTime);
 			
-			executorService.execute(new BiddingThread(loanInfo));
+			BiddingThread biddingThread = null;
+			
+			for (BiddingThread b : AutoBidManager.biddingThreads) {
+				if (!b.getStatus()) {
+					biddingThread = b;
+					break;
+				}
+			}
+			
+			if (null == biddingThread) {
+				isAlive = false;
+				return;
+			}
+			
+			biddingThread.init(loanInfo);
+			AutoBidManager.executorService.execute(biddingThread);
 		}
 			
 		this.listIds.clear();
 		this.loanInfosMap.clear();
+		
+		isAlive = false;
+	}
+	
+	public boolean getStatus() {
+		return isAlive;
 	}
 
 	/*private static void checkValidReqTime() {

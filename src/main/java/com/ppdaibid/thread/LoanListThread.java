@@ -8,8 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
@@ -31,9 +29,8 @@ import com.ppdaibid.utils.PropertiesUtil;
  * @author joesealea
  */
 public class LoanListThread implements Runnable {
-
+	
 	private static final Logger logger = Logger.getLogger(LoanListThread.class);
-	private static final ExecutorService executorService = Executors.newCachedThreadPool();
 	
 	private static Map<Integer, Date> ignoreIdsMap = new ConcurrentHashMap<Integer, Date>();
 
@@ -41,6 +38,7 @@ public class LoanListThread implements Runnable {
 	private static int pageIndex = 1;
 	//一次batchListingInfos请求最大允许的ListingIds数量
 	private static int batchListingInfosSize = 10;
+	private static int pageListFirstSize = 50;
 	private static int validTime = -12;
 	
 	private BidDao bidDao = null;
@@ -51,6 +49,11 @@ public class LoanListThread implements Runnable {
 
 	public LoanListThread(int pageIndex_) {
 		pageIndex = pageIndex_;
+		
+		WebApplicationContext context = ContextLoader.getCurrentWebApplicationContext();
+		BidDaoImpl bidDaoImpl = context.getBean("bidDao", BidDaoImpl.class);
+		bidDao = bidDaoImpl;
+		
 		try {
 			validTime = 0 - Integer.parseInt(PropertiesUtil.getProperty("validTime", "12"));
 		} catch (Exception e) {
@@ -66,9 +69,13 @@ public class LoanListThread implements Runnable {
 			batchListingInfosSize = 10;
 		}
 		
-		WebApplicationContext context = ContextLoader.getCurrentWebApplicationContext();
-		BidDaoImpl bidDaoImpl = context.getBean("bidDao", BidDaoImpl.class);
-		bidDao = bidDaoImpl;
+		try {
+			//每页前pageListFirstSize条数据作为有效数据
+			pageListFirstSize = Integer.parseInt(PropertiesUtil.getProperty("pageListFirstSize", "50"));
+		} catch (Exception e) {
+			logger.error("pageListFirstSize configurate error", e);
+			pageListFirstSize = 10;
+		}
 	}
 
 	@Override
@@ -113,7 +120,7 @@ public class LoanListThread implements Runnable {
 		
 		int length = jsonLoanInfos.length();
 
-		for (int i = 0; i < length; i++) {
+		for (int i = 0; i < length  && i < pageListFirstSize; i++) {
 			JSONObject jsonloanInfo = (JSONObject) jsonLoanInfos.get(i);
 			int listingId = jsonloanInfo.getInt("ListingId");
 			LoanInfo loanInfo = new LoanInfo();
@@ -137,7 +144,7 @@ public class LoanListThread implements Runnable {
 
 			}
 		});
-		executorService.execute(thread);
+		AutoBidManager.executorService.execute(thread);
 		
 		length = listIds.size();
 		
@@ -151,8 +158,22 @@ public class LoanListThread implements Runnable {
 			loanInfosMapParam.put(listingId, loanInfosMap.get(listingId));
 			
 			if ((batchListingInfosSize <= listIdsParam.size() || i >= length - 1) && 0 < listIdsParam.size()) {
-				Runnable batchListingInfosThread = new BatchListingInfosThread(listIdsParam, loanInfosMapParam);
-				executorService.execute(batchListingInfosThread);
+				BatchListingInfosThread batchListingInfosThread = null;
+				
+				for (BatchListingInfosThread b : AutoBidManager.batchListingInfosThreads) {
+					if (!b.getStatus()) {
+						batchListingInfosThread = b;
+						break;
+					}
+				}
+				
+				if (null == batchListingInfosThread) {
+					return;
+				}
+				
+				batchListingInfosThread.init(listIdsParam, loanInfosMapParam);
+				AutoBidManager.executorService.execute(batchListingInfosThread);
+				
 				listIdsParam = new ArrayList<Integer>();
 				loanInfosMapParam = new HashMap<Integer, LoanInfo>();
 			}
@@ -185,7 +206,7 @@ public class LoanListThread implements Runnable {
 			}
 		});
 		
-		executorService.execute(thread);
+		AutoBidManager.executorService.execute(thread);
 	}
 	
 	static {

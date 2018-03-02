@@ -18,9 +18,9 @@ public class AutoBidManager {
 	private static int biddingThreadsLength = 200;
 	
 	public static final ExecutorService executorService = Executors.newCachedThreadPool();
-	public static final Runnable loanListThread = new LoanListThread();
-	public static final BatchListingInfosThread[] batchDebtInfosThreads = new BatchListingInfosThread[batchListingInfosThreadLength];
-	public static final BiddingThread[] buyDebtThreads = new BiddingThread[biddingThreadsLength];
+	public static final LoanListThread loanListThread = new LoanListThread();
+	public static final BatchListingInfosThread[] batchListingInfosThreads = new BatchListingInfosThread[batchListingInfosThreadLength];
+	public static final BiddingThread[] biddingThreads = new BiddingThread[biddingThreadsLength];
 	
 	// LoanList请求间隔时间
 	public static long loanListIntervalTime = 110;
@@ -31,6 +31,13 @@ public class AutoBidManager {
 	 * 开始投标
 	 */
 	public static void startLoanInfos() {
+		for (int i = 0; i < batchListingInfosThreadLength; i ++) {
+			batchListingInfosThreads[i] =  new BatchListingInfosThread();
+		}
+		for (int i = 0; i < biddingThreadsLength; i ++) {
+			biddingThreads[i] = new BiddingThread();
+		}
+		
 		try {
 			//从配置文件中读取LoanList请求间隔时间，如果未配置或者配置错误，则使用默认值
 			loanListIntervalTime = Integer.parseInt(PropertiesUtil.getProperty("loanListIntervalTime", "110"));
@@ -61,7 +68,6 @@ public class AutoBidManager {
 				}
 				
 				logger.info("Start to bid...");
-//				Thread loanListThread = new Thread(new LoanListThread());
 				while (true) {
 					try {
 						if (loanListNeedWait) {

@@ -17,22 +17,27 @@ public class BiddingThread implements Runnable {
 	
 	private static final Logger logger = Logger.getLogger(BiddingThread.class);
 	
-//	private static int amount = 51;
+	private boolean isAlive = false;
 	
 	private BidDao bidDao = null;
 	private LoanInfo loanInfo = null;
 	
-	public BiddingThread(LoanInfo loanInfo) {
+	public BiddingThread() {
 		WebApplicationContext context = ContextLoader.getCurrentWebApplicationContext();
 		BidDaoImpl bidDaoImpl = context.getBean("bidDao", BidDaoImpl.class);
 		this.bidDao = bidDaoImpl;
-		
+	}
+	
+	public void init(LoanInfo loanInfo) {
+		this.isAlive = true;
 		this.loanInfo = loanInfo;
 	}
 
 	@Override
 	public void run() {
 		if (null == this.loanInfo) {
+			
+			isAlive = false;
 			return;
 		}
 		
@@ -52,6 +57,8 @@ public class BiddingThread implements Runnable {
 		if (null == result) {
 			loanInfo.setBid(false);
 			bidDao.addLoanInfo(loanInfo);
+			
+			isAlive = false;
 			return;
 		}
 		
@@ -63,6 +70,7 @@ public class BiddingThread implements Runnable {
 			loanInfo.setBid(false);
 			bidDao.addLoanInfo(loanInfo);
 			
+			isAlive = false;
 			return;
 		}
 		
@@ -85,6 +93,11 @@ public class BiddingThread implements Runnable {
 		}
 		
 		bidDao.addLoanInfo(loanInfo);
+		isAlive = false;
+	}
+	
+	public boolean getStatus() {
+		return isAlive;
 	}
 	
 	/*static {
