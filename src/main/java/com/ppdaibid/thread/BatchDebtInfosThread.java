@@ -126,7 +126,7 @@ public class BatchDebtInfosThread extends Thread {
 			
 			debtInfosMap.put(debtId, debtInfo);
 		}
-		batchListingInfosResult = BidUtil.batchListingInfos(listingIds);
+//		batchListingInfosResult = BidUtil.batchListingInfos(listingIds);
 		context = batchListingInfosResult.getContext();
 		if (context.contains("您的操作太频繁")) {
 			logger.error("LoanInfo请求太频繁，请求结果为：" + context);
