@@ -90,12 +90,16 @@ public class PPDserviceImpl implements PPDservice {
 		if (null != result && result.isSucess()) {
 			
 			JSONObject accessInfo = new JSONObject(result.getContext());
-			AccessInfo.openID = JsonUtil.getString(accessInfo, "OpenID", null);
-			AccessInfo.accessToken = JsonUtil.getString(accessInfo, "AccessToken", null);
-			AccessInfo.refreshToken = JsonUtil.getString(accessInfo, "RefreshToken", null);
-			AccessInfo.expiresIn = JsonUtil.getInt(accessInfo, "ExpiresIn", 0);
 			
-			return "SUCCESS";
+			int resultCode = JsonUtil.getInt(accessInfo, "ResultCode", -1);
+			if (0 == resultCode) {
+				AccessInfo.openID = JsonUtil.getString(accessInfo, "OpenID", null);
+				AccessInfo.accessToken = JsonUtil.getString(accessInfo, "AccessToken", null);
+				AccessInfo.refreshToken = JsonUtil.getString(accessInfo, "RefreshToken", null);
+				AccessInfo.expiresIn = JsonUtil.getInt(accessInfo, "ExpiresIn", 0);
+				
+				return "SUCCESS";
+			}
 		}
 		
 		return "ERROR";

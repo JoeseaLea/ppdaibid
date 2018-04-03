@@ -52,6 +52,8 @@ public class BiddingThread implements Runnable {
 			result = BidUtil.bidding(this.loanInfo.getListingId(), 52, false);
 		} else if (BidStrategyCheck.checkStrategy51(loanInfo)) {
 			result = BidUtil.bidding(this.loanInfo.getListingId(), 51, false);
+		} else if (BidStrategyCheck.checkStrategy78(loanInfo)) {
+			result = BidUtil.bidding(this.loanInfo.getListingId(), 78, false);
 		}
 		
 		if (null == result) {

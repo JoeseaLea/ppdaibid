@@ -24,7 +24,7 @@ public class AccessInfo {
 	/**
 	 * 设备指纹，对应设备的唯一标识
 	 */
-	public static String deviceFP = "9998f2e6bb0746809f8319a0c15e2778";
+	public static String deviceFP = "b4ba0c14b66e41ed91445e61e365e291";
 //	public static final String deviceFP = "e3c43d2d77724d4c93da9f91bc2ead79";
 	/**
 	 * 用户在第三方平台上的唯一标识
@@ -34,12 +34,12 @@ public class AccessInfo {
 	/**
 	 * 用户给第三方平台的授权访问令牌,有效期7天
 	 */
-	public static String accessToken = "c649d235-4a99-4c01-88b0-a7fd5ae6b534";
+	public static String accessToken = "37839901-6601-4b95-9349-e9e328933874";
 //	public static final String accessToken = "6e83bdf3-11ba-4420-a6ff-87fbf3c87dc0";
 	/**
 	 * 用户给第三方授权使用刷新令牌,有效期90天
 	 */
-	public static String refreshToken = "6d9d87d9-0cf0-4d31-8c0a-a1cc313bb37a";
+	public static String refreshToken = "2627b4a0-9bdb-4984-8956-cea69b65e8e7";
 //	public static String refreshToken = "a21b0472-41bd-4805-b3cc-ec4f792e60bf";
 	/**
 	 * 用户给第三方授权访问令牌超时时间，单位s

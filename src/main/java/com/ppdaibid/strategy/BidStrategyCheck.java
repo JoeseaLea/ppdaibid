@@ -203,4 +203,38 @@ public class BidStrategyCheck {
 		
 		return false;
 	}
+	
+	/*投标金额78 学历C 28 0天 创建日期：20180402*/
+	public static boolean checkStrategy78(LoanInfo loanInfo) {
+		if (("AAA".equals(loanInfo.getCreditCode()) || "AA".equals(loanInfo.getCreditCode())
+				|| "A".equals(loanInfo.getCreditCode()) || "B".equals(loanInfo.getCreditCode())
+				|| "C".equals(loanInfo.getCreditCode()) || "D".equals(loanInfo.getCreditCode()))/*等级*/
+				&& 1 == loanInfo.getCertificateValidate() /*学历认证1*/
+				&& null != loanInfo.getEducationDegree() && 1 == loanInfo.getEducateValidate()/*无学历策略，不用判断学校判断学校是否空*/
+				&& 12 >= loanInfo.getMonths() /*借款周期小于12个月*/
+				&& 26 <= loanInfo.getRate() /*借款利率大于26*/
+				&& 30000 >= loanInfo.getAmount()/*借款金额小于30000*/
+				&& 1 <= loanInfo.getSuccessCount()/*成功借款次数大于1*/
+				&& 0 >= loanInfo.getWasteCount()/*流标次数0*/
+				&& 5 <= loanInfo.getNormalCount()/*正常还清次数大于8*/
+				&& 0 >= loanInfo.getOverdueLessCount()/*15天内逾期0*/
+				&& 0 >= loanInfo.getOverdueMoreCount()/*15天外逾期0*/
+				&& 15000 > loanInfo.getOwingAmount()/*剩余金额小于15000*/
+				/*&& 0.42 >= loanInfo.getOwingAmount() / loanInfo.getTotalPrincipal()/*待还金额/累计借款金额小于0.42*/
+				&& 0.8 >= loanInfo.getOwingAmount() / loanInfo.getHighestDebt()/*待还金额/历史最高债小于0.8*/
+				/*&& 1.1 >= (loanInfo.getAmount() + loanInfo.getOwingAmount()) / loanInfo.getHighestDebt()/*借后负债/最高债小于0.8*/
+				/*&& 1.5 >= loanInfo.getAmount() / loanInfo.getHighestPrincipal()/*本次/最高单次小于1*/
+				&& 30000 >= loanInfo.getAmount() + loanInfo.getOwingAmount()/*借后负债小于30000*/
+				&& 0 < loanInfo.getRemainFunding()) {/*可投金额大于0*/
+			
+			Calendar c = Calendar.getInstance();
+			c.setTime(loanInfo.getLastSuccessBorrowTime());
+			c.add(Calendar.HOUR, 24*60);/*距最近借款时间大于60天*/
+			if (c.getTime().getTime() <= new Date().getTime()) {
+				return true;
+			}
+		}
+		
+		return false;
+	}
 }
