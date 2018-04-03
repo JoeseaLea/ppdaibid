@@ -69,6 +69,11 @@ public class AutoBidManager {
 				
 				logger.info("Start to bid...");
 				while (true) {
+					if (!AccessInfo.tokenIsValid) {
+						sleep(loanListIntervalTime);
+						continue;
+					}
+					
 					try {
 						if (loanListNeedWait) {
 							sleep(waitTime*60*1000);

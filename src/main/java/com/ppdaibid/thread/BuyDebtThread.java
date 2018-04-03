@@ -6,6 +6,7 @@ import org.springframework.web.context.ContextLoader;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.ppdai.open.core.Result;
+import com.ppdaibid.AccessInfo;
 import com.ppdaibid.DebtManager;
 import com.ppdaibid.dao.DebtDao;
 import com.ppdaibid.dao.impl.DebtDaoImpl;
@@ -73,6 +74,13 @@ public class BuyDebtThread extends Thread {
 			DebtManager.debtListNeedWait = true;
 			debtInfo.setBid(false);
 			debtDao.addDebtInfo(debtInfo);
+			
+			isAlive = false;
+			return;
+		}
+		
+		if (context.contains("令牌") && (context.contains("失败") || context.contains("不存在"))) {
+			AccessInfo.tokenIsValid = false;
 			
 			isAlive = false;
 			return;

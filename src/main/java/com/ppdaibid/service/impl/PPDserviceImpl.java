@@ -97,6 +97,7 @@ public class PPDserviceImpl implements PPDservice {
 				AccessInfo.accessToken = JsonUtil.getString(accessInfo, "AccessToken", null);
 				AccessInfo.refreshToken = JsonUtil.getString(accessInfo, "RefreshToken", null);
 				AccessInfo.expiresIn = JsonUtil.getInt(accessInfo, "ExpiresIn", 0);
+				AccessInfo.tokenIsValid = true;
 				
 				return "SUCCESS";
 			}

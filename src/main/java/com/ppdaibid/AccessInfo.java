@@ -32,6 +32,10 @@ public class AccessInfo {
 	public static String openID = "fbb020313ab74092820c5b8a0a1ea3cd";
 //	public static String openID = "706762e882f94c809fa588bb262e330f";
 	/**
+	 * 令牌是否有效（默认有效）
+	 */
+	public static boolean tokenIsValid = true;
+	/**
 	 * 用户给第三方平台的授权访问令牌,有效期7天
 	 */
 	public static String accessToken = "37839901-6601-4b95-9349-e9e328933874";

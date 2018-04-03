@@ -65,6 +65,11 @@ public class DebtManager {
 				logger.info("Start to buy debt...");
 				
 				while (true) {
+					if (!AccessInfo.tokenIsValid) {
+						sleep(debtListIntervalTime);
+						continue;
+					}
+					
 					try {
 						if (debtListNeedWait) {
 							sleep(waitTime*60*1000);

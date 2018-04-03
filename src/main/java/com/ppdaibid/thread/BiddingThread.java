@@ -6,6 +6,7 @@ import org.springframework.web.context.ContextLoader;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.ppdai.open.core.Result;
+import com.ppdaibid.AccessInfo;
 import com.ppdaibid.AutoBidManager;
 import com.ppdaibid.dao.BidDao;
 import com.ppdaibid.dao.impl.BidDaoImpl;
@@ -71,6 +72,13 @@ public class BiddingThread implements Runnable {
 			
 			loanInfo.setBid(false);
 			bidDao.addLoanInfo(loanInfo);
+			
+			isAlive = false;
+			return;
+		}
+		
+		if (context.contains("令牌") && (context.contains("失败") || context.contains("不存在"))) {
+			AccessInfo.tokenIsValid = false;
 			
 			isAlive = false;
 			return;

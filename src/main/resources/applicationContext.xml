@@ -13,20 +13,32 @@
         <property name="dataSource" ref="dataSource"/>
     </bean>
     
+    <!-- 定时器 -->
     <bean id="ppdaiTimer" class="com.ppdaibid.timer.PpdaiTimer"/>
+    <!-- 每周周一早上9点发送短信提示登录 -->
     <bean id="smsSendServiceJob" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
-    	<property name="targetObject" ref="ppdaiTimer" />
-    	<property name="targetMethod" value="sendSMSAuthCode" />
+	    	<property name="targetObject" ref="ppdaiTimer" />
+	    	<property name="targetMethod" value="sendSMSAuthCode" />
     </bean> 
-    <bean id="timerTigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
-    	<property name="jobDetail" ref="smsSendServiceJob" />
-    	<property name="cronExpression" value="0 0 9 ? * MON" />
+    <bean id="smsSendTimerTigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+	    	<property name="jobDetail" ref="smsSendServiceJob" />
+	    	<property name="cronExpression" value="0 0 9 ? * MON" />
+    </bean>
+    <!-- 每天早上9点检测token是否有效 -->
+    <bean id="checkTokenServiceJob" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+	    	<property name="targetObject" ref="ppdaiTimer" />
+	    	<property name="targetMethod" value="checkTokenIsValid" />
+    </bean> 
+    <bean id="checkTokenTimerTigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+	    	<property name="jobDetail" ref="checkTokenServiceJob" />
+	    	<property name="cronExpression" value="0 0 9 ? * *" />
     </bean>
     <bean id="startjob" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
-    	<property name="applicationContextSchedulerContextKey" value="applicationContext" />
+    		<property name="applicationContextSchedulerContextKey" value="applicationContext" />
         <property name="triggers">
             <list>
-                <ref bean="timerTigger" />
+                <ref bean="smsSendTimerTigger" />
+                <ref bean="checkTokenTimerTigger" />
             </list> 
         </property>
     </bean>
