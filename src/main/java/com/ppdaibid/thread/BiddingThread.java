@@ -36,9 +36,9 @@ public class BiddingThread implements Runnable {
 
 	@Override
 	public void run() {
+		try {
 		if (null == this.loanInfo) {
 			
-			isAlive = false;
 			return;
 		}
 		
@@ -61,7 +61,6 @@ public class BiddingThread implements Runnable {
 			loanInfo.setBid(false);
 			bidDao.addLoanInfo(loanInfo);
 			
-			isAlive = false;
 			return;
 		}
 		
@@ -73,14 +72,12 @@ public class BiddingThread implements Runnable {
 			loanInfo.setBid(false);
 			bidDao.addLoanInfo(loanInfo);
 			
-			isAlive = false;
 			return;
 		}
 		
 		if (context.contains("令牌") && (context.contains("失败") || context.contains("不存在"))) {
 			AccessInfo.tokenIsValid = false;
 			
-			isAlive = false;
 			return;
 		}
 		
@@ -103,20 +100,12 @@ public class BiddingThread implements Runnable {
 		}
 		
 		bidDao.addLoanInfo(loanInfo);
-		isAlive = false;
+		} finally {
+			isAlive = false;
+		}
 	}
 	
 	public boolean getStatus() {
 		return isAlive;
 	}
-	
-	/*static {
-		try {
-			amount = Integer.parseInt(PropertiesUtil.getProperty("amount", "51"));
-		} catch (Exception e) {
-			logger.error("The count of batchListingInfos request can be request in one minute configurate error", e);
-			amount = 51;
-		}
-	}*/
-
 }
